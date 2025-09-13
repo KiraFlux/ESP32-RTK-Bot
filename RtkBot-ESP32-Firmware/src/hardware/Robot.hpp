@@ -34,7 +34,7 @@ struct Robot : Singleton<Robot> {
         /// Получить ссылку на Singleton экземпляр хранилища настроек
         static kf::Storage<Settings> &storage() {
             static kf::Storage<Settings> instance{
-                .key="r-set",
+                .key="RobotSet",
                 .settings = {}
             };
             return instance;
