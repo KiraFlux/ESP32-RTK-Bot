@@ -1,19 +1,15 @@
 <div align="centered">
-  <p1>MISIS Zoomers</p1>
+  <h1>MISIS Zoomers</h1>
 </div>
 
 ## Рабочие папки веток
 
-<blockquite>
+<blockquote>
 
-### `dev-esp32`
-
-[RtkBot-ESP32-Firmware](./RtkBot-ESP32-Firmware)
-
-<sub>Прошивка контроллера низкого уровня</sub>
+[RtkBot-ESP32-Firmware](./RtkBot-ESP32-Firmware) - Прошивка контроллера низкого уровня <sub><code>dev-esp32</code></sub>
 
 </blockquote>
 
-...
+---
 
 ### TODO - остальные ветки
