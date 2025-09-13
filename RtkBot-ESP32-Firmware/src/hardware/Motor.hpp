@@ -2,59 +2,68 @@
 
 #include <Arduino.h>
 
-#include "tools/Logger.hpp"
+#include "kf/Logger.hpp"
+#include "rs/aliases.hpp"
+
 
 /// @brief Драйвер мотора
 struct Motor {
-  /// @brief Псевдоним типа для значения ШИМ
-  using Pwm = uint16_t;
 
-  /// @brief Настройки мотора
-  struct Settings {
-    /// @brief Максимальное значение ШИМ
-    Pwm max_pwm;
+    /// @brief Псевдоним типа для значения ШИМ
+    using SignedPwm = rs::i16;
 
-    /// @brief Положительное направление вращения
-    enum class Direction : uint8_t {
-      /// @brief По часовой
-      CW = 0x00,
-      /// @brief Против часовой
-      CCW = 0x01
-    } direction;
-  };
+    /// @brief Настройки мотора
+    struct Settings {
+        /// @brief Максимальное значение ШИМ
+        SignedPwm max_pwm;
 
- private:
-  /// @brief Настройки
-  const Settings& settings;
-  /// @brief Пины
-  const uint8_t pin_dir, pin_speed;
+        /// @brief Положительное направление вращения
+        enum class Direction : rs::u8 {
+            /// @brief По часовой
+            CW = 0x00,
+            /// @brief Против часовой
+            CCW = 0x01
+        } direction;
+    };
 
- public:
-  explicit constexpr Motor(const Settings& settings, gpio_num_t dir,
-                           gpio_num_t speed)
-      : settings{settings},
-        pin_dir{static_cast<uint8_t>(dir)},
-        pin_speed{static_cast<uint8_t>(speed)} {}
+private:
 
-  /// @brief Инициализация пинов драйвера
-  void init() const {
-    Logger_debug("begin");
+    /// @brief Настройки
+    const Settings &settings;
+    /// @brief Пины
+    const rs::u8 pin_dir, pin_speed;
 
-    digitalWrite(pin_dir, LOW);
-    digitalWrite(pin_speed, LOW);
-    pinMode(pin_dir, OUTPUT);
-    pinMode(pin_speed, OUTPUT);
+public:
 
-    Logger_debug("end");
-  }
+    explicit constexpr Motor(const Settings &settings, gpio_num_t dir, gpio_num_t speed) :
+        settings{settings},
+        pin_dir{static_cast<rs::u8>(dir)},
+        pin_speed{static_cast<rs::u8>(speed)} {}
 
-  /// @brief Установить значение ШИМ + направление
-  /// @param pwm_dir Значение - ШИМ, Знак - направление
-  void write(Pwm pwm_dir) const {
-    constexpr auto max_pwm = 255;
+    /// @brief Инициализация пинов драйвера
+    void init() const {
+        kf_Logger_info("begin");
 
-    pwm_dir = constrain(pwm_dir, -max_pwm, max_pwm);
-    analogWrite(pin_speed, abs(pwm_dir));
-    digitalWrite(pin_dir, (pwm_dir < 0) == static_cast<uint8_t>(Settings::Direction::CW));
-  }
+        digitalWrite(pin_dir, LOW);
+        digitalWrite(pin_speed, LOW);
+        pinMode(pin_dir, OUTPUT);
+        pinMode(pin_speed, OUTPUT);
+
+        kf_Logger_debug("end");
+    }
+
+    /// @brief Установить значение ШИМ + направление
+    /// @param pwm Значение - ШИМ, Знак - направление
+    void write(SignedPwm pwm) const {
+        pwm = constrain(pwm, -settings.max_pwm, settings.max_pwm);
+        analogWrite(pin_speed, abs(pwm));
+        digitalWrite(pin_dir, matchDirection(pwm));
+    }
+
+private:
+
+    inline bool matchDirection(SignedPwm pwm) const {
+        const bool positive = pwm < 0;
+        return settings.direction == Settings::Direction::CW == positive;
+    }
 };
