@@ -1,9 +1,8 @@
 #include <Arduino.h>
 
+#include "hardware/Motor.hpp"
 #include "tools/Logger.hpp"
 #include "tools/Storage.hpp"
-
-#include "hardware/Motor.hpp"
 
 static Storage<Motor::Settings> left_motor_storage{
     .key = "lms",
@@ -19,9 +18,9 @@ static const Motor right_motor{right_motor_storage.settings, GPIO_NUM_19,
                                GPIO_NUM_18};
 
 void setup() {
-  Logger_info("begin");
-
   Serial.begin(115200);
+
+  Logger_info("begin");
 
   Logger::instance().write_func = [](const char* text, size_t lenght) {
     Serial.write(text, lenght);
@@ -30,11 +29,10 @@ void setup() {
   left_motor.init();
   right_motor.init();
 
+  left_motor_storage.load();
+  right_motor_storage.load();
+
   Logger_debug("init ok");
-
-  delay(2000);
 }
 
-void loop() {
-  delay(5000);
-}
+void loop() { delay(5000); }
