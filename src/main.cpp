@@ -10,7 +10,7 @@ void setup() {
     Serial.write(text, lenght);
   };
 
-  Logger_info("");
+  Logger_info("Start");
 }
 
 void loop() {
