@@ -107,15 +107,26 @@ void loop() {
         if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
     }
 
-    if (dual_joystick.packet_timeout.expired()) {
-        dual_joystick.control_packet = DualJoystick::ControlPacket{};
-        robot.left_motor.stop();
-        robot.right_motor.stop();
-    } else {
-        float left_power, right_power;
-        dual_joystick.calc(left_power, right_power);
-        robot.left_motor.set(left_power);
-        robot.right_motor.set(right_power);
+    // DJC
+    {
+        static bool disconnected{true};
+        if (dual_joystick.packet_timeout.expired()) {
+            if (not disconnected) {
+                kf_Logger_info("disconnected");
+                disconnected = true;
+
+                dual_joystick.control_packet = DualJoystick::ControlPacket{};
+                robot.left_motor.stop();
+                robot.right_motor.stop();
+            }
+        } else {
+            disconnected = false;
+
+            float left_power, right_power;
+            dual_joystick.calc(left_power, right_power);
+            robot.left_motor.set(left_power);
+            robot.right_motor.set(right_power);
+        }
     }
 
     delay(1);
