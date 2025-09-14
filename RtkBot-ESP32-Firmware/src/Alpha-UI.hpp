@@ -55,6 +55,7 @@ public:
 /// @brief Страница настройки моторов
 struct MotorTunePage final : kf::Page {
     kf::Button set_current_pwm_as_dead_zone;
+    kf::Button re_init;
 
     using PwmInput = EventObserver<kf::Labeled<kf::SpinBox<Motor::SignedPwm>>>;
     using PwmDuty = PwmInput::Observable::Content::Scalar;
@@ -72,17 +73,27 @@ struct MotorTunePage final : kf::Page {
 
     NormalizedInput normalized_input;
     NormalizedValueStepInput normalized_value_step_input;
-    NormalizedValue normalized_value_step{0.25f};
+    NormalizedValue normalized_value_step{0.1f};
     NormalizedValue current_normalized_value{0.0f};
     const NormalizedValue normalized_value_step_step{0.1f};
 
-    explicit MotorTunePage(const char *title, const Motor &motor, kf::Storage<Robot::Settings> &storage) :
+    using FrequencyInput = kf::Labeled<kf::SpinBox<Motor::PwmSettings::FrequencyScalar>>;
+    FrequencyInput frequency_input;
+    const Motor::PwmSettings::FrequencyScalar frequency_step{2500};
+
+    explicit MotorTunePage(const char *title, Motor &motor, kf::Storage<Robot::Settings> &storage) :
         Page{title},
         pwm_step{static_cast<PwmDuty>(1u << (motor.pwm_settings.ledc_resolution_bits - 2))},
         set_current_pwm_as_dead_zone{
-            "Upd DeadZone",
+            "Set DeadZone",
             [this, &storage](kf::Button &) {
                 storage.settings.pwm_settings.dead_zone = current_pwm;
+            }
+        },
+        re_init{
+            "Re-Init",
+            [&motor](kf::Button &) {
+                motor.init();
             }
         },
         pwm_input{
@@ -107,7 +118,7 @@ struct MotorTunePage final : kf::Page {
         },
         normalized_input{
             NormalizedInput::Observable{
-                "PWM",
+                "Norm",
                 NormalizedInput::Observable::Content{
                     current_normalized_value,
                     normalized_value_step
@@ -124,6 +135,14 @@ struct MotorTunePage final : kf::Page {
                 normalized_value_step_step,
                 NormalizedValueStepInput::Content::Mode::Geometric
             }
+        },
+        frequency_input{
+            "Hz",
+            FrequencyInput::Content{
+                storage.settings.pwm_settings.ledc_frequency_hz,
+                frequency_step,
+                FrequencyInput::Content::Mode::ArithmeticPositiveOnly
+            }
         } {
         MainPage::instance().link(*this);
         add(pwm_input);
@@ -131,5 +150,7 @@ struct MotorTunePage final : kf::Page {
         add(set_current_pwm_as_dead_zone);
         add(normalized_input);
         add(normalized_value_step_input);
+        add(frequency_input);
+        add(re_init);
     }
 };

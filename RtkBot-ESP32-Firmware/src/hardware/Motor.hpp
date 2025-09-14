@@ -41,10 +41,12 @@ struct Motor {
 
     /// @brief Настройки ШИМ
     struct PwmSettings {
+        using FrequencyScalar = rs::u16;
+
         /// @brief Разрешение (8 .. 12)
         rs::u8 ledc_resolution_bits;
         /// @brief Частота ШИМ Гц
-        rs::u16 ledc_frequency_hz;
+        FrequencyScalar ledc_frequency_hz;
         /// @brief Мёртвая зона ШИМ
         SignedPwm dead_zone;
 
