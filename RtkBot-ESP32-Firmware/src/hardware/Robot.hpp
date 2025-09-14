@@ -13,52 +13,48 @@ struct Robot : Singleton<Robot> {
 
     /// Настройки аппаратного обеспечения
     struct Settings {
+        /// Настройки моторов
+        Motor::Settings left_motor, right_motor;
+        /// Настройки узла Espnow
+        Espnow::Settings esp_now;
+    };
 
-        /// Параметры левого мотора
-        Motor::Settings left{
-            .max_pwm=255,
-            .direction=Motor::Settings::Direction::CCW
-        };
-
-        /// Параметры правого мотора
-        Motor::Settings right{
-            .max_pwm=255,
-            .direction=Motor::Settings::Direction::CW
-        };
-
-        /// Параметры протокола Espnow
-        Espnow::Settings esp_now{
-            .remote_controller_mac={0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc}
-        };
-
-        /// Получить ссылку на Singleton экземпляр хранилища настроек
-        static kf::Storage<Settings> &storage() {
-            static kf::Storage<Settings> instance{
-                .key="RobotSet",
-                .settings = {}
-            };
-            return instance;
+    /// Хранилище настроек
+    kf::Storage<Settings> storage{
+        .key="RobotSet",
+        .settings={
+            .left_motor={
+                .max_pwm=255,
+                .direction=Motor::Settings::Direction::CCW
+            },
+            .right_motor={
+                .max_pwm=255,
+                .direction=Motor::Settings::Direction::CW
+            },
+            .esp_now={
+                .remote_controller_mac={0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc}
+            }
         }
-
-        Settings(const Settings &) = delete;
-
-    private:
-        Settings() = default;
     };
 
     /// Левый мотор
-    Motor left_motor{Settings::storage().settings.left, GPIO_NUM_27, GPIO_NUM_21};
+    Motor left_motor{storage.settings.left_motor, GPIO_NUM_27, GPIO_NUM_21};
 
     /// Правый мотор
-    Motor right_motor{Settings::storage().settings.right, GPIO_NUM_19, GPIO_NUM_18};
+    Motor right_motor{storage.settings.right_motor, GPIO_NUM_19, GPIO_NUM_18};
 
     /// Узел протокола Espnow
-    Espnow esp_now{Settings::storage().settings.esp_now};
+    Espnow esp_now{storage.settings.esp_now};
 
     /// Инициализировать всю периферию
-    bool init() const {
+    bool init() {
         left_motor.init();
         right_motor.init();
-        return esp_now.init();
+
+        if (not storage.load() and not storage.save()) { return false; }
+
+        if (not esp_now.init()) { return false; }
+
+        return true;
     }
 };

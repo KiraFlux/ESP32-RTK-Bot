@@ -1,16 +1,13 @@
 #include <Arduino.h>
 
+#include <kf/Logger.hpp>
+
 #include "hardware/Robot.hpp"
-
-#include "kf/Text-UI.hpp"
-
 #include "Alpha-UI.hpp"
-
-#include "kf/Logger.hpp"
 
 
 static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
-    enum class Code : uint8_t {
+    enum class Code : rs::u8 {
         None = 0x00,
         Reload = 0x10,
         Click = 0x20,
@@ -22,21 +19,14 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
 
     auto translate = [](Code code) -> kf::Event {
         switch (code) {
-            case Code::Reload:
-                return kf::Event::Update;
-            case Code::Click:
-                return kf::Event::Click;
-            case Code::Left:
-                return kf::Event::ChangeIncrement;
-            case Code::Right:
-                return kf::Event::ChangeDecrement;
-            case Code::Up:
-                return kf::Event::ElementPrevious;
-            case Code::Down:
-                return kf::Event::ElementNext;
+            case Code::Reload:return kf::Event::Update;
+            case Code::Click:return kf::Event::Click;
+            case Code::Left:return kf::Event::ChangeIncrement;
+            case Code::Right:return kf::Event::ChangeDecrement;
+            case Code::Up:return kf::Event::ElementPrevious;
+            case Code::Down:return kf::Event::ElementNext;
             case Code::None:
-            default:
-                return kf::Event::None;
+            default:return kf::Event::None;
         }
     };
 
@@ -44,12 +34,10 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
         case 20: // DJC control packet
             return;
 
-        case sizeof(Code):
-            kf::PageManager::instance().addEvent(translate(*static_cast<const Code *>(data)));
+        case sizeof(Code):kf::PageManager::instance().addEvent(translate(*static_cast<const Code *>(data)));
             return;
 
-        default:
-            kf_Logger_warn("Unknown packet: (%d bytes)", size);
+        default:kf_Logger_warn("Unknown packet: (%d bytes)", size);
     }
 }
 
@@ -64,16 +52,11 @@ void setup() {
 
     // TUI setup
     {
-        static RobotSettingsPage robot_settings_page{Robot::Settings::storage()};
+        static RobotSettingsPage robot_settings_page{Robot::instance().storage};
         static TestMotorPage test_left_motor_page{"Test-MotorLeft", robot.left_motor};
         static TestMotorPage test_right_motor_page{"Test-MotorRight", robot.right_motor};
 
         kf::PageManager::instance().bind(MainPage::instance());
-    }
-
-    auto &robot_storage = Robot::Settings::storage();
-    if (not robot_storage.load()) {
-        robot_storage.save();
     }
 
     kf_Logger_debug("init ok");
@@ -87,4 +70,6 @@ void loop() {
         const auto result = Robot::instance().esp_now.send(slice.data, slice.len);
         if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
     }
+
+    delay(1);
 }
