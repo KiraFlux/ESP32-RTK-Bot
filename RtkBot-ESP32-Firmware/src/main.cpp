@@ -31,8 +31,8 @@ struct DualJoystick : Singleton<DualJoystick> {
             ret_right = control_packet.right_y;
         } else {
             // System mode
-            ret_left = control_packet.left_y + control_packet.left_x;
-            ret_right = control_packet.left_y - control_packet.left_x;
+            ret_left = control_packet.left_y - control_packet.left_x;
+            ret_right = control_packet.left_y + control_packet.left_x;
         }
     }
 };
