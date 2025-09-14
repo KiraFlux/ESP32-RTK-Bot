@@ -38,8 +38,8 @@ public:
 
     using Observable = W;
 
-    explicit EventObserver(W w, std::function<void(kf::Event)> handler) :
-        w{std::move(w)}, handler{std::move(handler)} {}
+    explicit EventObserver(W w, std::function<void(kf::Event)> _handler) :
+        w{std::move(w)}, handler{std::move(_handler)} {}
 
     bool onEvent(kf::Event event) override {
         const auto ret = w.onEvent(event);
