@@ -6,7 +6,7 @@
 #include "rs/aliases.hpp"
 
 
-/// @brief Драйвер мотора
+/// @brief Драйвер мотора (IArduino Motor Shield)
 struct Motor {
 
     /// @brief Псевдоним типа для значения ШИМ
@@ -17,11 +17,11 @@ struct Motor {
         /// @brief Максимальное значение ШИМ
         SignedPwm max_pwm;
 
-        /// @brief Положительное направление вращения
+        /// @brief Определяет направление положительного вращения
         enum class Direction : rs::u8 {
-            /// @brief По часовой
+            /// @brief Положительное вращение по часовой
             CW = 0x00,
-            /// @brief Против часовой
+            /// @brief Положительное вращение против часовой
             CCW = 0x01
         } direction;
     };

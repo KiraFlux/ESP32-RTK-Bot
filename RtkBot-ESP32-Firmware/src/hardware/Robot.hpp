@@ -38,10 +38,18 @@ struct Robot : Singleton<Robot> {
     };
 
     /// Левый мотор
-    Motor left_motor{storage.settings.left_motor, GPIO_NUM_27, GPIO_NUM_21};
+    Motor left_motor{
+        storage.settings.left_motor,
+        GPIO_NUM_27,
+        GPIO_NUM_21
+    };
 
     /// Правый мотор
-    Motor right_motor{storage.settings.right_motor, GPIO_NUM_19, GPIO_NUM_18};
+    Motor right_motor{
+        storage.settings.right_motor,
+        GPIO_NUM_19,
+        GPIO_NUM_18
+    };
 
     /// Узел протокола Espnow
     Espnow esp_now{storage.settings.esp_now};
