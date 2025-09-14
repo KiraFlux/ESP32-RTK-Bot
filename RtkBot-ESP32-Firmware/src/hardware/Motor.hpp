@@ -63,10 +63,8 @@ public:
 private:
 
     inline bool matchDirection(SignedPwm pwm) const {
-        if (settings.direction == Settings::Direction::CW) {
-            return pwm > 0;
-        } else {
-            return pwm < 0;
-        }
+        // todo Проверить валидность
+        const bool positive = pwm > 0;
+        return settings.direction == Settings::Direction::CW == positive;
     }
 };
