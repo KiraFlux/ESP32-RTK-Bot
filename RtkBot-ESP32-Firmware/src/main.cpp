@@ -52,9 +52,10 @@ void setup() {
 
     // TUI setup
     {
-        static RobotSettingsPage robot_settings_page{Robot::instance().storage};
-        static TestMotorPage test_left_motor_page{"Test-MotorLeft", robot.left_motor};
-        static TestMotorPage test_right_motor_page{"Test-MotorRight", robot.right_motor};
+        auto &storage = Robot::instance().storage;
+        static RobotSettingsPage robot_settings_page{storage};
+        static MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, storage};
+        static MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, storage};
 
         kf::PageManager::instance().bind(MainPage::instance());
     }

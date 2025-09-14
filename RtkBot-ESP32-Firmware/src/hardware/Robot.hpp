@@ -11,11 +11,13 @@
 struct Robot : Singleton<Robot> {
     friend struct Singleton<Robot>;
 
-    /// Настройки аппаратного обеспечения
+    /// @brief Настройки аппаратного обеспечения
     struct Settings {
-        /// Настройки моторов
-        Motor::Settings left_motor, right_motor;
-        /// Настройки узла Espnow
+        /// @brief Настройки ШИМ
+        Motor::PwmSettings pwm_settings;
+        /// @brief Настройки драйверов моторов
+        Motor::DriverSettings left_motor, right_motor;
+        /// @brief Настройки узла Espnow
         Espnow::Settings esp_now;
     };
 
@@ -23,21 +25,22 @@ struct Robot : Singleton<Robot> {
     kf::Storage<Settings> storage{
         .key="RobotSet",
         .settings={
+            .pwm_settings={
+                .ledc_resolution_bits=10,
+                .ledc_frequency_hz=20000,
+                .dead_zone=0,
+            },
             .left_motor={
-                .direction=Motor::Settings::Direction::CCW,
+                .direction=Motor::DriverSettings::Direction::CCW,
                 .driver_direction_pin=static_cast<rs::u8>(GPIO_NUM_27),
                 .driver_speed_pin=static_cast<rs::u8>(GPIO_NUM_21),
                 .ledc_channel=0,
-                .ledc_resolution_bits=10,
-                .ledc_frequency_hz=20000,
             },
             .right_motor={
-                .direction=Motor::Settings::Direction::CW,
+                .direction=Motor::DriverSettings::Direction::CW,
                 .driver_direction_pin=static_cast<rs::u8>(GPIO_NUM_19),
                 .driver_speed_pin=static_cast<rs::u8>(GPIO_NUM_18),
                 .ledc_channel=1,
-                .ledc_resolution_bits=10,
-                .ledc_frequency_hz=20000,
             },
             .esp_now={
                 .remote_controller_mac={0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc}
@@ -46,10 +49,10 @@ struct Robot : Singleton<Robot> {
     };
 
     /// Левый мотор
-    Motor left_motor{storage.settings.left_motor};
+    Motor left_motor{storage.settings.left_motor, storage.settings.pwm_settings};
 
     /// Правый мотор
-    Motor right_motor{storage.settings.right_motor};
+    Motor right_motor{storage.settings.right_motor, storage.settings.pwm_settings};
 
     /// Узел протокола Espnow
     Espnow esp_now{storage.settings.esp_now};
