@@ -31,7 +31,7 @@ struct TestMotorPage final : kf::Page {
     Input pwm_input;
     kf::Button set_button;
     Input::Content::Scalar pwm{0};
-    const Input::Content::Scalar step{32};
+    const Input::Content::Scalar step{128};
 
     explicit TestMotorPage(const char *title, const Motor &motor) :
         Page{title},
