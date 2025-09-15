@@ -1,55 +1,9 @@
 #include <Arduino.h>
-
-#include "tools/TimeoutManager.hpp"
-
 #include <kf/Logger.hpp>
 
 #include "Alpha-UI.hpp"
+#include "RemoteController.hpp"
 #include "hardware/Robot.hpp"
-
-/// Работает с пакетами данных с пульта
-struct DualJoystick : Singleton<DualJoystick> {
-    friend struct Singleton<DualJoystick>;
-
-    /// Пакет данных управления
-    struct ControlPacket {
-        float left_x{0}, left_y{0};
-        float right_x{0}, right_y{0};
-        bool toggle_mode{false};
-    };
-
-private:
-    ControlPacket control_packet{};
-    TimeoutManager packet_timeout_manager{1000};
-
-public:
-    /// Рассчитать управление для двух моторов
-    void calc(float &ret_left, float &ret_right) const {
-        if (control_packet.toggle_mode) {
-            // Tank mode
-            ret_left = control_packet.left_y;
-            ret_right = control_packet.right_y;
-        } else {
-            // System mode
-            ret_left = control_packet.left_y + control_packet.left_x;
-            ret_right = control_packet.left_y - control_packet.left_x;
-        }
-    }
-
-    /// Просрочен ли пакет 
-    inline bool isPacketTimeoutExpired() const { return packet_timeout_manager.expired(); }
-
-    /// Сбросить значение пакета управления
-    void resetControlPacket() {
-        control_packet = ControlPacket{};
-    }
-
-    /// Обновить пакет
-    void updateControlPacket(const ControlPacket &packet) {
-        control_packet = packet;
-        packet_timeout_manager.update();
-    }
-};
 
 static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
     enum class Code : rs::u8 {
@@ -76,8 +30,8 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
     };
 
     switch (size) {
-        case sizeof(DualJoystick::ControlPacket)://
-            DualJoystick::instance().updateControlPacket(*static_cast<const DualJoystick::ControlPacket *>(data));
+        case sizeof(RemoteController::ControlPacket)://
+            RemoteController::instance().updateControlPacket(*static_cast<const RemoteController::ControlPacket *>(data));
             return;
 
         case sizeof(Code)://
@@ -112,7 +66,7 @@ void setup() {
 
 void loop() {
     static auto &page_manager = kf::PageManager::instance();
-    static auto &dual_joystick = DualJoystick::instance();
+    static auto &dual_joystick = RemoteController::instance();
     static auto &robot = Robot::instance();
 
     if (page_manager.pollEvents()) {
@@ -128,7 +82,7 @@ void loop() {
             if (not disconnected) {
                 kf_Logger_info("disconnected");
                 disconnected = true;
-            
+
                 dual_joystick.resetControlPacket();
                 robot.left_motor.stop();
                 robot.right_motor.stop();
