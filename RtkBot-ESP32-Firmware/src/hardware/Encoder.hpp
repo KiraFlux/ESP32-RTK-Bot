@@ -56,7 +56,7 @@ public:
     void enable() {
         attachInterruptArg(
             pinout_settings.pin_phase_a,
-            Encoder::onMainPhaseInt,
+            Encoder::mainPhaseIntrruptHandler,
             static_cast<void *>(this),
             static_cast<int>(pinout_settings.mode));
     }
@@ -81,7 +81,7 @@ public:
 private:
     /// Обработчик прерывания на основной фазе
     /// @param v Указатель на экземпляр Encoder
-    static void onMainPhaseInt(void *v) {
+    static void IRAM_ATTR mainPhaseIntrruptHandler(void *v) {
         auto &encoder = *static_cast<Encoder *>(v);
 
         if (digitalRead(encoder.pinout_settings.pin_phase_b)) {
