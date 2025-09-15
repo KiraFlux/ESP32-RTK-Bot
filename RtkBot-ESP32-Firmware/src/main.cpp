@@ -50,14 +50,14 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
 
     auto translate = [](Code code) -> kf::Event {
         switch (code) {
-            case Code::Reload:return kf::Event::Update;
-            case Code::Click:return kf::Event::Click;
-            case Code::Left:return kf::Event::ChangeIncrement;
-            case Code::Right:return kf::Event::ChangeDecrement;
-            case Code::Up:return kf::Event::ElementPrevious;
-            case Code::Down:return kf::Event::ElementNext;
+            case Code::Reload: return kf::Event::Update;
+            case Code::Click: return kf::Event::Click;
+            case Code::Left: return kf::Event::ChangeIncrement;
+            case Code::Right: return kf::Event::ChangeDecrement;
+            case Code::Up: return kf::Event::ElementPrevious;
+            case Code::Down: return kf::Event::ElementNext;
             case Code::None:
-            default:return kf::Event::None;
+            default: return kf::Event::None;
         }
     };
 
@@ -70,7 +70,7 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
             kf::PageManager::instance().addEvent(translate(*static_cast<const Code *>(data)));
             return;
 
-        default:kf_Logger_warn("Unknown packet: (%d bytes)", size);
+        default: kf_Logger_warn("Unknown packet: (%d bytes)", size);
     }
 }
 
