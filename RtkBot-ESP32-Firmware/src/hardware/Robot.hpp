@@ -35,7 +35,7 @@ struct Robot : Singleton<Robot> {
             .pwm = {
                 .ledc_resolution_bits = 10,
                 .ledc_frequency_hz = 20000,
-                .dead_zone = 568, // Значение получено эксперементально
+                .dead_zone = 568,  // Значение получено эксперементально
             },
             .left_motor = {
                 .direction = Motor::DriverSettings::Direction::CCW,
