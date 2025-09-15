@@ -20,7 +20,7 @@ struct Robot : Singleton<Robot> {
         Motor::DriverSettings left_motor, right_motor;
 
         /// Общие настройки энкодеров
-        Encoder::GenericSettings generic_encoder;
+        Encoder::ConvertationSettings generic_encoder;
         /// Настройки подключения энкодеров
         Encoder::PinoutSettings left_encoder, right_encoder;
 
@@ -53,14 +53,14 @@ struct Robot : Singleton<Robot> {
                 .ticks_in_one_mm = 1.0f,
             },
             .left_encoder = {
-                .pin_phase_a = static_cast<rs::u8>(GPIO_NUM_NC),
-                .pin_phase_b = static_cast<rs::u8>(GPIO_NUM_NC),
-                .mode = Encoder::PinoutSettings::Mode::Rising,
+                .pin_a = static_cast<rs::u8>(GPIO_NUM_NC),
+                .pin_b = static_cast<rs::u8>(GPIO_NUM_NC),
+                .edge = Encoder::PinoutSettings::Edge::Rising,
             },
             .right_encoder = {
-                .pin_phase_a = static_cast<rs::u8>(GPIO_NUM_NC),
-                .pin_phase_b = static_cast<rs::u8>(GPIO_NUM_NC),
-                .mode = Encoder::PinoutSettings::Mode::Rising,
+                .pin_a = static_cast<rs::u8>(GPIO_NUM_NC),
+                .pin_b = static_cast<rs::u8>(GPIO_NUM_NC),
+                .edge = Encoder::PinoutSettings::Edge::Rising,
             },
             .esp_now = {
                 .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},

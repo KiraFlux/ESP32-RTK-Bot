@@ -6,85 +6,91 @@
 /// Энкодер Инкреметальный с двумя
 struct Encoder {
 
-    /// Псевдоним типа для положения энкодера в отсчётах
-    using Tick = rs::i32;
+    /// Псевдоним типа для положения энкодера в отсчётах (ticks)
+    using Ticks = rs::i32;
 
-    /// Псевдоним типа для положения энкодера в мм
-    using Mm = rs::f64;
+    /// Псевдоним типа для положения энкодера в миллиметрах (mm)
+    using Millimeters = rs::f64;
 
     /// Общие настройки (Настройки преобразований)
-    struct GenericSettings {
-        /// Из отсчётов в мм
+    struct ConvertationSettings {
+        /// Сколько отсчёток в одном миллиметре
         rs::f32 ticks_in_one_mm;
 
-        Mm toMm(Tick ticks) const { return Mm(ticks) / ticks_in_one_mm; }
-        Tick toTicks(Mm mm) const { return Tick(mm * ticks_in_one_mm); }
+        /// Перевести из отсчётов в мм
+        Millimeters toMillimeters(Ticks ticks) const { return Millimeters(ticks) / ticks_in_one_mm; }
+
+        /// Перевести из мм в отсчёты
+        Ticks toTicks(Millimeters mm) const { return Ticks(mm * ticks_in_one_mm); }
     };
 
     /// Настройки пинов
     struct PinoutSettings {
         /// Основная фаза (Фаза на прерывании)
-        rs::u8 pin_phase_a;
+        rs::u8 pin_a;
         /// Вторая фаза (Фаза направления)
-        rs::u8 pin_phase_b;
+        rs::u8 pin_b;
 
         /// Режим вызова прерывания
-        enum class Mode : rs::u8 {
+        enum class Edge : rs::u8 {
+            /// Вызов прерывания на подъёме (LOW -> HIGH)
             Rising = RISING,
+            /// Вызов прерывания на спаде (HIGH -> LOW)
             Falling = FALLING
-        } mode;
+        } edge;
     };
 
+    /// Настройки подключения
     const PinoutSettings &pinout_settings;
-    const GenericSettings &generic_settings;
+    /// Общие настройки
+    const ConvertationSettings &converation_settings;
 
 private:
     /// Текущее положение энкодера в отсчётах
-    Tick position{0};
+    Ticks position{0};
 
 public:
-    explicit Encoder(const PinoutSettings &pinout_settings, const GenericSettings &generic_settings) :
-        pinout_settings{pinout_settings}, generic_settings{generic_settings} {}
+    explicit Encoder(const PinoutSettings &pinout_settings, const ConvertationSettings &generic_settings) :
+        pinout_settings{pinout_settings}, converation_settings{generic_settings} {}
 
     /// Инициализировать пины энкодера
     void init() const {
-        pinMode(pinout_settings.pin_phase_a, INPUT);
-        pinMode(pinout_settings.pin_phase_b, INPUT);
+        pinMode(pinout_settings.pin_a, INPUT);
+        pinMode(pinout_settings.pin_b, INPUT);
     }
 
     /// Разрешить (Подключить) обработку прерываний с основной фазы
     void enable() {
         attachInterruptArg(
-            pinout_settings.pin_phase_a,
-            Encoder::mainPhaseIntrruptHandler,
+            pinout_settings.pin_a,
+            Encoder::InterruptHandler,
             static_cast<void *>(this),
-            static_cast<int>(pinout_settings.mode));
+            static_cast<int>(pinout_settings.edge));
     }
 
-    /// Отключить обработку прерываний 
+    /// Отключить обработку прерываний
     void disable() const {
-        detachInterrupt(pinout_settings.pin_phase_a);
+        detachInterrupt(pinout_settings.pin_a);
     }
 
     /// Положение энкодера в отчётах
-    inline Tick positionTicks() const { return position; }
+    inline Ticks getPositionTicks() const { return position; }
 
     /// Установить положение энкодера в отсчётах
-    void setPositionTicks(Tick new_positon) { position = new_positon; }
+    void setPositionTicks(Ticks new_positon) { position = new_positon; }
 
     /// Положение энкодера в мм
-    inline Mm positionMm() const { return generic_settings.toMm(position); }
+    inline Millimeters getPositionMillimeters() const { return converation_settings.toMillimeters(position); }
 
     /// Установить положение энкодера в мм
-    void setPositionMm(Mm new_positon) { position = generic_settings.toTicks(new_positon); }
+    void setPositionMillimeters(Millimeters new_positon) { position = converation_settings.toTicks(new_positon); }
 
 private:
     /// Обработчик прерывания на основной фазе
-    /// @param v Указатель на экземпляр Encoder
-    static void IRAM_ATTR mainPhaseIntrruptHandler(void *v) {
-        auto &encoder = *static_cast<Encoder *>(v);
+    static void IRAM_ATTR InterruptHandler(void *instance) {
+        auto &encoder = *static_cast<Encoder *>(instance);
 
-        if (digitalRead(encoder.pinout_settings.pin_phase_b)) {
+        if (digitalRead(encoder.pinout_settings.pin_b)) {
             encoder.position += 1;
         } else {
             encoder.position -= 1;
