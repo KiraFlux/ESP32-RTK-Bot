@@ -14,10 +14,17 @@ struct Robot : Singleton<Robot> {
 
     /// Настройки аппаратного обеспечения
     struct Settings {
+        
         /// Настройки ШИМ
         Motor::PwmSettings pwm;
         /// Настройки драйверов моторов
         Motor::DriverSettings left_motor, right_motor;
+        
+        /// 
+        Encoder::GenericSettings generic_encoder_settings;
+        /// @brief 
+        Encoder::PinoutSettings left_encoder, right_encoder;
+
         /// Настройки узла Espnow
         Espnow::Settings esp_now;
     };
