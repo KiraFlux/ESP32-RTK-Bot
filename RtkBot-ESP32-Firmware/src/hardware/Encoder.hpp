@@ -6,7 +6,7 @@
 /// @brief Incremental Two-Phase Encoder
 struct Encoder {
 
-    /// Type Alias for Encoder position
+    /// @brief Type Alias for Encoder position
     using Tick = rs::i32;
 
     /// @brief Encoder pinout settings
