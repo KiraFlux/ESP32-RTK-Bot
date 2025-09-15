@@ -1,10 +1,12 @@
 #pragma once
 
+#include <kf/Storage.hpp>
+
 #include "tools/Singleton.hpp"
 
+#include "hardware/Encoder.hpp"
 #include "hardware/Espnow.hpp"
 #include "hardware/Motor.hpp"
-#include "kf/Storage.hpp"
 
 /// Аппаратное обеспечение робота
 struct Robot : Singleton<Robot> {
@@ -61,12 +63,12 @@ struct Robot : Singleton<Robot> {
                 return false;
             }
         }
-        
+
         // Аппаратные компоненты
 
         if (not left_motor.init()) { return false; }
         if (not right_motor.init()) { return false; }
-        
+
         // Софт компоненты
 
         if (not esp_now.init()) { return false; }
