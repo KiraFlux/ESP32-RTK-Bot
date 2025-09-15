@@ -6,7 +6,7 @@
 #include "hardware/Robot.hpp"
 
 
-/// @brief Основная страница
+/// Основная страница
 struct MainPage final : kf::Page, Singleton<MainPage> {
     friend struct Singleton<MainPage>;
 
@@ -14,7 +14,7 @@ struct MainPage final : kf::Page, Singleton<MainPage> {
         Page{"Main"} {}
 };
 
-/// @brief Страница настроек
+/// Страница настроек
 struct RobotSettingsPage final : kf::Page {
     kf::Button save_button;
 
@@ -52,7 +52,7 @@ public:
     }
 };
 
-/// @brief Страница настройки моторов
+/// Страница настройки моторов
 struct MotorTunePage final : kf::Page {
     kf::Button set_current_pwm_as_dead_zone;
     kf::Button re_init;

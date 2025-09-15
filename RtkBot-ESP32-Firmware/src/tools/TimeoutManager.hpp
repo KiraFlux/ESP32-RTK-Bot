@@ -3,17 +3,17 @@
 #include <Arduino.h>
 
 
-/// @brief Служба для отслеживания момента истечения допустимого таймаута
+/// Служба для отслеживания момента истечения допустимого таймаута
 struct TimeoutManager final {
 
-    /// @brief Псевдоним для явного обозначения миллисекунд
+    /// Псевдоним для явного обозначения миллисекунд
     using Ms = decltype(millis());
 
 private:
 
-    /// @brief Таймаут
+    /// Таймаут
     Ms timeout;
-    /// @brief Время следующего таймаута
+    /// Время следующего таймаута
     Ms next_timeout{0};
 
 public:
@@ -21,12 +21,12 @@ public:
     explicit TimeoutManager(Ms timeout_duration) :
         timeout{timeout_duration} {}
 
-    /// @brief Обновление таймаута
+    /// Обновление таймаута
     void update() {
         next_timeout = millis() + timeout;
     }
 
-    /// @brief Проверка истечения таймаута
+    /// Проверка истечения таймаута
     /// @returns <code>true</code> если таймаут просрочен
     inline bool expired() const { return millis() >= next_timeout; }
 };

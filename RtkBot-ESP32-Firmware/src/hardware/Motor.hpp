@@ -5,31 +5,31 @@
 #include "kf/Logger.hpp"
 #include "rs/aliases.hpp"
 
-/// @brief Драйвер мотора (IArduino Motor Shield)
+/// Драйвер мотора (IArduino Motor Shield)
 struct Motor {
 
-    /// @brief Псевдоним типа для значения ШИМ
+    /// Псевдоним типа для значения ШИМ
     using SignedPwm = rs::i16;
 
-    /// @brief Настройки драйвера
+    /// Настройки драйвера
     struct DriverSettings {
 
-        /// @brief Определяет направление положительного вращения
+        /// Определяет направление положительного вращения
         enum class Direction : rs::u8 {
-            /// @brief Положительное вращение по часовой
+            /// Положительное вращение по часовой
             CW,
-            /// @brief Положительное вращение против часовой
+            /// Положительное вращение против часовой
             CCW
         } direction;
 
-        /// @brief Пин направления (H-bridge)
+        /// Пин направления (H-bridge)
         rs::u8 direction_pin;
-        /// @brief Пин скорости (Enable)
+        /// Пин скорости (Enable)
         rs::u8 speed_pin;
-        /// @brief Канал (0 .. 15)
+        /// Канал (0 .. 15)
         rs::u8 ledc_channel;
 
-        /// @brief Проверяет корректность настроек
+        /// Проверяет корректность настроек
         /// @return <code>true</code> - Заданные параметры в норме
         bool isValid() const {
             if (ledc_channel > 15) {
@@ -40,15 +40,15 @@ struct Motor {
         }
     };
 
-    /// @brief Настройки ШИМ
+    /// Настройки ШИМ
     struct PwmSettings {
         using FrequencyScalar = rs::u16;
 
-        /// @brief Разрешение (8 .. 12)
+        /// Разрешение (8 .. 12)
         rs::u8 ledc_resolution_bits;
-        /// @brief Частота ШИМ Гц
+        /// Частота ШИМ Гц
         FrequencyScalar ledc_frequency_hz;
-        /// @brief Мёртвая зона ШИМ
+        /// Мёртвая зона ШИМ
         SignedPwm dead_zone;
 
         bool isValid() const {
@@ -59,25 +59,25 @@ struct Motor {
             return true;
         }
 
-        /// @brief Рассчитать актуальное максимальное значение ШИМ
+        /// Рассчитать актуальное максимальное значение ШИМ
         inline SignedPwm maxPwm() const { return static_cast<SignedPwm>((1u << ledc_resolution_bits) - 1u); }
     };
 
-    /// @brief Настройки драйвера
+    /// Настройки драйвера
     const DriverSettings &driver_settings;
 
-    /// @brief Настройки ШИМ
+    /// Настройки ШИМ
     const PwmSettings &pwm_settings;
 
 private:
-    /// @brief Максимальное значение ШИМ
+    /// Максимальное значение ШИМ
     SignedPwm max_pwm{0};
 
 public:
     explicit constexpr Motor(const DriverSettings &driver_settings, const PwmSettings &pwm_settings) :
         driver_settings{driver_settings}, pwm_settings(pwm_settings) {}
 
-    /// @brief Инициализация пинов драйвера
+    /// Инициализация пинов драйвера
     bool init() {
         kf_Logger_info("begin");
 
@@ -100,12 +100,12 @@ public:
         return true;
     }
 
-    /// @brief Установить значение в нормализованной величине
+    /// Установить значение в нормализованной величине
     void set(float value) const {
         write(fromNormalized(value));
     }
 
-    /// @brief Установить значение ШИМ + направление
+    /// Установить значение ШИМ + направление
     /// @param pwm Значение - ШИМ, Знак - направление
     void write(SignedPwm pwm) const {
         pwm = constrain(pwm, -max_pwm, max_pwm);
@@ -113,7 +113,7 @@ public:
         ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
     }
 
-    /// @brief Остановить мотор
+    /// Остановить мотор
     void stop() const {
         digitalWrite(driver_settings.direction_pin, LOW);
         ledcWrite(driver_settings.ledc_channel, 0);

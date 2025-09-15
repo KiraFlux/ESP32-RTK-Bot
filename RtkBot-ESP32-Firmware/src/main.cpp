@@ -11,6 +11,7 @@
 struct DualJoystick : Singleton<DualJoystick> {
     friend struct Singleton<DualJoystick>;
 
+    /// 
     struct ControlPacket {
         float left_x{0}, left_y{0};
         float right_x{0}, right_y{0};

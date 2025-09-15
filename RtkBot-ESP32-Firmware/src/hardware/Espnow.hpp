@@ -7,31 +7,31 @@
 #include "espnow/Protocol.hpp"
 
 
-/// @brief Узел Espnow
+/// Узел Espnow
 struct Espnow {
 
 public:
 
     /// Настройки узла
     struct Settings {
-        /// @brief MAC-Адрес пульта
+        /// MAC-Адрес пульта
         espnow::Mac remote_controller_mac;
     };
 
 private:
 
-    /// @brief Настройки узла
+    /// Настройки узла
     const Settings &settings;
 
 public:
 
-    /// @brief Обработчик входящего пакета от пульта
+    /// Обработчик входящего пакета от пульта
     std::function<void(const void *, rs::u8)> on_receive{nullptr};
 
     explicit Espnow(const Settings &settings) :
         settings{settings} {}
 
-    /// @brief Инициализировать протокол
+    /// Инициализировать протокол
     /// @returns <code>true</code> - Успешная инициализация
     bool init() const {
         kf_Logger_info("init");
@@ -66,12 +66,12 @@ public:
         return true;
     }
 
-    /// @brief Отправить пакет данных на пульт
+    /// Отправить пакет данных на пульт
     template<typename T> inline rs::Result<void, espnow::Protocol::SendError> send(const T &value) {
         return espnow::Protocol::send(settings.remote_controller_mac, value);
     }
 
-    /// @brief Отправить буфер на пульт
+    /// Отправить буфер на пульт
     inline rs::Result<void, espnow::Protocol::SendError> send(const void *data, rs::u8 size) {
         return espnow::Protocol::send(settings.remote_controller_mac, data, size);
     }

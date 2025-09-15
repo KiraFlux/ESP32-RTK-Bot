@@ -3,17 +3,17 @@
 #include <Arduino.h>
 
 
-/// @brief Хронометр
+/// Хронометр
 struct Chronometer final {
 
 private:
 
-    /// @brief Время предыдущего измерения
+    /// Время предыдущего измерения
     decltype(micros()) last_us{micros()};
 
 public:
 
-    /// @brief Рассчитать дельту между вызовами
+    /// Рассчитать дельту между вызовами
     /// @returns dt Сек.
     float calc() noexcept {
         const auto current_us = micros();

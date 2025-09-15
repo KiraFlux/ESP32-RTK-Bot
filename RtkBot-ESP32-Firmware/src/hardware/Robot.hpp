@@ -6,21 +6,21 @@
 #include "hardware/Motor.hpp"
 #include "kf/Storage.hpp"
 
-/// @brief Аппаратное обеспечение робота
+/// Аппаратное обеспечение робота
 struct Robot : Singleton<Robot> {
     friend struct Singleton<Robot>;
 
-    /// @brief Настройки аппаратного обеспечения
+    /// Настройки аппаратного обеспечения
     struct Settings {
-        /// @brief Настройки ШИМ
+        /// Настройки ШИМ
         Motor::PwmSettings pwm;
-        /// @brief Настройки драйверов моторов
+        /// Настройки драйверов моторов
         Motor::DriverSettings left_motor, right_motor;
-        /// @brief Настройки узла Espnow
+        /// Настройки узла Espnow
         Espnow::Settings esp_now;
     };
 
-    /// @brief Хранилище настроек
+    /// Хранилище настроек
     kf::Storage<Settings> storage{
         .key = "RobotSet",
         .settings = {
@@ -43,16 +43,16 @@ struct Robot : Singleton<Robot> {
             },
             .esp_now = {.remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc}}}};
 
-    /// @brief Левый мотор
+    /// Левый мотор
     Motor left_motor{storage.settings.left_motor, storage.settings.pwm};
 
-    /// @brief Правый мотор
+    /// Правый мотор
     Motor right_motor{storage.settings.right_motor, storage.settings.pwm};
 
-    /// @brief Узел протокола Espnow
+    /// Узел протокола Espnow
     Espnow esp_now{storage.settings.esp_now};
 
-    /// @brief Инициализировать всю периферию
+    /// Инициализировать всю периферию
     bool init() {
         // Попытка загрузить настройки
         if (not storage.load()) {

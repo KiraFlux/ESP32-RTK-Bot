@@ -1,6 +1,6 @@
-/// @brief Реализация шаблона проектирования "Одиночка"
+/// Реализация шаблона проектирования "Одиночка"
 template<typename T> struct Singleton {
-    /// @brief Получить ссылку на единственный экземпляр
+    /// Получить ссылку на единственный экземпляр
     static T &instance() {
         static T instance{};
         return instance;
