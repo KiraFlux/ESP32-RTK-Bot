@@ -5,7 +5,6 @@
 #include "kf/Logger.hpp"
 #include "rs/aliases.hpp"
 
-
 /// @brief Драйвер мотора (IArduino Motor Shield)
 struct Motor {
 
@@ -24,12 +23,14 @@ struct Motor {
         } direction;
 
         /// @brief Пин направления (H-bridge)
-        rs::u8 driver_direction_pin;
+        rs::u8 direction_pin;
         /// @brief Пин скорости (Enable)
-        rs::u8 driver_speed_pin;
+        rs::u8 speed_pin;
         /// @brief Канал (0 .. 15)
         rs::u8 ledc_channel;
 
+        /// @brief Проверяет корректность настроек
+        /// @return <code>true</code> - Заданные параметры в норме
         bool isValid() const {
             if (ledc_channel > 15) {
                 kf_Logger_error("Invalid");
@@ -58,7 +59,7 @@ struct Motor {
             return true;
         }
 
-        /// @brief Рассчитать актуальной максимальное значение ШИМ
+        /// @brief Рассчитать актуальное максимальное значение ШИМ
         inline SignedPwm maxPwm() const { return static_cast<SignedPwm>((1u << ledc_resolution_bits) - 1u); }
     };
 
@@ -69,12 +70,10 @@ struct Motor {
     const PwmSettings &pwm_settings;
 
 private:
-
     /// @brief Максимальное значение ШИМ
     SignedPwm max_pwm{0};
 
 public:
-
     explicit constexpr Motor(const DriverSettings &driver_settings, const PwmSettings &pwm_settings) :
         driver_settings{driver_settings}, pwm_settings(pwm_settings) {}
 
@@ -84,16 +83,15 @@ public:
 
         if (not driver_settings.isValid() or not pwm_settings.isValid()) { return false; }
 
-        pinMode(driver_settings.driver_direction_pin, OUTPUT);
-        pinMode(driver_settings.driver_speed_pin, OUTPUT);
+        pinMode(driver_settings.direction_pin, OUTPUT);
+        pinMode(driver_settings.speed_pin, OUTPUT);
 
         const auto current_frequency = ledcSetup(
             driver_settings.ledc_channel,
             pwm_settings.ledc_frequency_hz,
-            pwm_settings.ledc_resolution_bits
-        );
+            pwm_settings.ledc_resolution_bits);
         if (current_frequency == 0) { return false; }
-        ledcAttachPin(driver_settings.driver_speed_pin, driver_settings.ledc_channel);
+        ledcAttachPin(driver_settings.speed_pin, driver_settings.ledc_channel);
         stop();
 
         max_pwm = pwm_settings.maxPwm();
@@ -111,18 +109,17 @@ public:
     /// @param pwm Значение - ШИМ, Знак - направление
     void write(SignedPwm pwm) const {
         pwm = constrain(pwm, -max_pwm, max_pwm);
-        digitalWrite(driver_settings.driver_direction_pin, matchDirection(pwm));
+        digitalWrite(driver_settings.direction_pin, matchDirection(pwm));
         ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
     }
 
     /// @brief Остановить мотор
     void stop() const {
-        digitalWrite(driver_settings.driver_direction_pin, LOW);
+        digitalWrite(driver_settings.direction_pin, LOW);
         ledcWrite(driver_settings.ledc_channel, 0);
     }
 
 private:
-
     inline bool matchDirection(SignedPwm pwm) const {
         const bool positive = pwm > 0;
         return driver_settings.direction == DriverSettings::Direction::CW == positive;
@@ -139,5 +136,4 @@ private:
 
         return static_cast<SignedPwm>(ret);
     }
-
 };
