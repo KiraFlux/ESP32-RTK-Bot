@@ -4,27 +4,26 @@
 
 #include <kf/Logger.hpp>
 
-#include "hardware/Robot.hpp"
 #include "Alpha-UI.hpp"
+#include "hardware/Robot.hpp"
 
-
+/// Работает с пакетами данных с пульта
 struct DualJoystick : Singleton<DualJoystick> {
     friend struct Singleton<DualJoystick>;
 
-    /// 
+    /// Пакет данных управления
     struct ControlPacket {
         float left_x{0}, left_y{0};
         float right_x{0}, right_y{0};
         bool toggle_mode{false};
-    } control_packet{};
+    };
 
-    TimeoutManager packet_timeout{1000};
+private:
+    ControlPacket control_packet{};
+    TimeoutManager packet_timeout_manager{1000};
 
-    void onPacket(const ControlPacket &packet) {
-        control_packet = packet;
-        packet_timeout.update();
-    }
-
+public:
+    /// Рассчитать управление для двух моторов
     void calc(float &ret_left, float &ret_right) const {
         if (control_packet.toggle_mode) {
             // Tank mode
@@ -35,6 +34,20 @@ struct DualJoystick : Singleton<DualJoystick> {
             ret_left = control_packet.left_y + control_packet.left_x;
             ret_right = control_packet.left_y - control_packet.left_x;
         }
+    }
+
+    /// Просрочен ли пакет 
+    inline bool isPacketTimeoutExpired() const { return packet_timeout_manager.expired(); }
+
+    /// Сбросить значение пакета управления
+    void resetControlPacket() {
+        control_packet = ControlPacket{};
+    }
+
+    /// Обновить пакет
+    void updateControlPacket(const ControlPacket &packet) {
+        control_packet = packet;
+        packet_timeout_manager.update();
     }
 };
 
@@ -64,7 +77,7 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
 
     switch (size) {
         case sizeof(DualJoystick::ControlPacket)://
-            DualJoystick::instance().onPacket(*static_cast<const DualJoystick::ControlPacket *>(data));
+            DualJoystick::instance().updateControlPacket(*static_cast<const DualJoystick::ControlPacket *>(data));
             return;
 
         case sizeof(Code)://
@@ -111,12 +124,12 @@ void loop() {
     // DJC
     {
         static bool disconnected{true};
-        if (dual_joystick.packet_timeout.expired()) {
+        if (dual_joystick.isPacketTimeoutExpired()) {
             if (not disconnected) {
                 kf_Logger_info("disconnected");
                 disconnected = true;
-
-                dual_joystick.control_packet = DualJoystick::ControlPacket{};
+            
+                dual_joystick.resetControlPacket();
                 robot.left_motor.stop();
                 robot.right_motor.stop();
             }
