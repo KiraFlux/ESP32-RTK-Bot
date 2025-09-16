@@ -1,10 +1,9 @@
 #pragma once
 
+#include <kf/Text-UI.hpp>
 #include <utility>
 
-#include "kf/Text-UI.hpp"
-#include "hardware/Robot.hpp"
-
+#include "Robot.hpp"
 
 /// Основная страница
 struct MainPage final : kf::Page, Singleton<MainPage> {
@@ -30,12 +29,10 @@ template<typename W> struct EventObserver : kf::Widget {
     static_assert((std::is_base_of<kf::Widget, W>::value), "W must be a kf::Widget Subclass");
 
 private:
-
     std::function<void(kf::Event)> handler;
     W w;
 
 public:
-
     using Observable = W;
 
     explicit EventObserver(W w, std::function<void(kf::Event)> _handler) :
@@ -88,62 +85,48 @@ struct MotorTunePage final : kf::Page {
             "Set DeadZone",
             [this, &storage](kf::Button &) {
                 storage.settings.pwm.dead_zone = current_pwm;
-            }
-        },
+            }},
         re_init{
             "Re-Init",
             [&motor](kf::Button &) {
                 motor.init();
-            }
-        },
+            }},
         pwm_input{
             PwmInput::Observable{
                 "PWM",
                 PwmInput::Observable::Content{
                     current_pwm,
-                    pwm_step
-                }
-            },
+                    pwm_step}},
             [this, &motor](kf::Event) {
                 motor.write(current_pwm);
-            }
-        },
+            }},
         pwm_step_input{
             "Step",
             PwmStepInput::Content{
                 pwm_step,
                 pwm_step_step,
-                PwmStepInput::Content::Mode::Geometric
-            }
-        },
+                PwmStepInput::Content::Mode::Geometric}},
         normalized_input{
             NormalizedInput::Observable{
                 "Norm",
                 NormalizedInput::Observable::Content{
                     current_normalized_value,
-                    normalized_value_step
-                }
-            },
+                    normalized_value_step}},
             [this, &motor](kf::Event) {
                 motor.set(current_normalized_value);
-            }
-        },
+            }},
         normalized_value_step_input{
             "Step",
             NormalizedValueStepInput::Content{
                 normalized_value_step,
                 normalized_value_step_step,
-                NormalizedValueStepInput::Content::Mode::Geometric
-            }
-        },
+                NormalizedValueStepInput::Content::Mode::Geometric}},
         frequency_input{
             "Hz",
             FrequencyInput::Content{
                 storage.settings.pwm.ledc_frequency_hz,
                 frequency_step,
-                FrequencyInput::Content::Mode::ArithmeticPositiveOnly
-            }
-        } {
+                FrequencyInput::Content::Mode::ArithmeticPositiveOnly}} {
         MainPage::instance().link(*this);
         add(pwm_input);
         add(pwm_step_input);

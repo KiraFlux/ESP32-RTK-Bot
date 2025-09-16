@@ -1,17 +1,16 @@
 #pragma once
 
 #include <WiFi.h>
-#include "espnow/Mac.hpp"
 
-#include "kf/Logger.hpp"
-#include "espnow/Protocol.hpp"
+#include <espnow/Mac.hpp>
+#include <espnow/Protocol.hpp>
 
+#include <kf/Logger.hpp>
 
 /// Узел Espnow
 struct Espnow {
 
 public:
-
     /// Настройки узла
     struct Settings {
         /// MAC-Адрес пульта
@@ -19,12 +18,10 @@ public:
     };
 
 private:
-
     /// Настройки узла
     const Settings &settings;
 
 public:
-
     /// Обработчик входящего пакета от пульта
     std::function<void(const void *, rs::u8)> on_receive{nullptr};
 

@@ -2,8 +2,8 @@
 
 #include <Arduino.h>
 
-#include "kf/Logger.hpp"
-#include "rs/aliases.hpp"
+#include <kf/Logger.hpp>
+#include <rs/aliases.hpp>
 
 /// Драйвер мотора (IArduino Motor Shield)
 struct Motor {
