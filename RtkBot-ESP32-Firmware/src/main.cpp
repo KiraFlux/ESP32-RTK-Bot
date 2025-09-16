@@ -59,7 +59,7 @@ static void setupTUI(kf::PageManager &page_manager) {
     static zms::MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, robot.storage};
     static zms::MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, robot.storage};
 
-    page_manager.bind(MainPage::instance());
+    page_manager.bind(zms::MainPage::instance());
 }
 
 static void pollRemoteControl() {

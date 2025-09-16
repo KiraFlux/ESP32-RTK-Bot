@@ -4,6 +4,8 @@
 
 #include "zms/tools/Singleton.hpp"
 
+namespace zms {
+
 /// Основная страница
 struct MainPage final : kf::Page, Singleton<MainPage> {
     friend struct Singleton<MainPage>;
@@ -11,3 +13,5 @@ struct MainPage final : kf::Page, Singleton<MainPage> {
     explicit MainPage() :
         Page{"Main"} {}
 };
+
+}// namespace zms
