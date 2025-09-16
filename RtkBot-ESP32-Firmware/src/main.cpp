@@ -56,6 +56,8 @@ static void sendTUI(kf::PageManager &page_manager) {
         std::min(slice.len, static_cast<rs::size>(ESP_NOW_MAX_DATA_LEN))
     );
 
+    kf_Logger_error("Send: %d bytes", slice.len);
+
     if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
 }
 
