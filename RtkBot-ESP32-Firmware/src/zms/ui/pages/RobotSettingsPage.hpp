@@ -9,7 +9,7 @@
 struct RobotSettingsPage final : kf::Page {
     kf::Button save_button;
 
-    explicit RobotSettingsPage(kf::Storage<Robot::Settings> &storage) :
+    explicit RobotSettingsPage(kf::Storage<zms::Robot::Settings> &storage) :
         Page{storage.key},
         save_button{"save", [&storage](kf::Button &) { storage.save(); }} {
         MainPage::instance().link(*this);

@@ -8,6 +8,9 @@
 #include "zms/drivers/Motor.hpp"
 #include "zms/remote/Espnow.hpp"
 
+/// @brief MISIS-Zoomers
+namespace zms {
+
 /// Аппаратное обеспечение робота
 struct Robot : Singleton<Robot> {
     friend struct Singleton<Robot>;
@@ -106,3 +109,5 @@ struct Robot : Singleton<Robot> {
         return true;
     }
 };
+
+}// namespace zms

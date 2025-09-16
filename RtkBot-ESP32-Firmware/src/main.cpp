@@ -49,12 +49,12 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
 
 static void sendTUI(kf::PageManager &page_manager) {
     const auto slice = page_manager.render();
-    const auto result = Robot::instance().esp_now.send(slice.data, slice.len);
+    const auto result = zms::Robot::instance().esp_now.send(slice.data, slice.len);
     if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
 }
 
 static void setupTUI(kf::PageManager &page_manager) {
-    auto &robot = Robot::instance();
+    auto &robot = zms::Robot::instance();
     static RobotSettingsPage robot_settings_page{robot.storage};
     static MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, robot.storage};
     static MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, robot.storage};
@@ -64,7 +64,7 @@ static void setupTUI(kf::PageManager &page_manager) {
 
 static void pollRemoteControl() {
     static auto &remote_controller = RemoteController::instance();
-    static auto &robot = Robot::instance();
+    static auto &robot = zms::Robot::instance();
     static bool disconnected{true};
 
     if (remote_controller.isPacketTimeoutExpired()) {
@@ -91,7 +91,7 @@ void setup() {
     kf::Logger::instance().write_func = [](const char *buffer, size_t size) { Serial.write(buffer, size); };
     kf_Logger_info("begin");
 
-    auto &robot = Robot::instance();
+    auto &robot = zms::Robot::instance();
     robot.init();
     robot.esp_now.on_receive = onEspnowRemoveControllerPacket;
 

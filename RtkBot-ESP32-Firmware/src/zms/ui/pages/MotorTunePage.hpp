@@ -35,7 +35,7 @@ struct MotorTunePage final : kf::Page {
     FrequencyInput frequency_input;
     const Motor::PwmSettings::FrequencyScalar frequency_step{2500};
 
-    explicit MotorTunePage(const char *title, Motor &motor, kf::Storage<Robot::Settings> &storage) :
+    explicit MotorTunePage(const char *title, Motor &motor, kf::Storage<zms::Robot::Settings> &storage) :
         Page{title},
         pwm_step{static_cast<PwmDuty>(1u << (motor.pwm_settings.ledc_resolution_bits - 2))},
         set_current_pwm_as_dead_zone{
