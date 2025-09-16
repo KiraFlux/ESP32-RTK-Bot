@@ -22,7 +22,7 @@ struct Robot : Singleton<Robot> {
         /// Настройки драйверов моторов
         Motor::DriverSettings left_motor, right_motor;
 
-        /// Общие настройки энкодеров
+        /// Настройки преобразования энкодера
         Encoder::ConvertationSettings generic_encoder;
         /// Настройки подключения энкодеров
         Encoder::PinoutSettings left_encoder, right_encoder;
