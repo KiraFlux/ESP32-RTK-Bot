@@ -53,13 +53,13 @@ struct Robot : Singleton<Robot> {
                 .ticks_in_one_mm = 1.0f,
             },
             .left_encoder = {
-                .pin_a = static_cast<rs::u8>(GPIO_NUM_NC),
-                .pin_b = static_cast<rs::u8>(GPIO_NUM_NC),
+                .pin_a = static_cast<rs::u8>(GPIO_NUM_32),
+                .pin_b = static_cast<rs::u8>(GPIO_NUM_33),
                 .edge = Encoder::PinoutSettings::Edge::Rising,
             },
             .right_encoder = {
-                .pin_a = static_cast<rs::u8>(GPIO_NUM_NC),
-                .pin_b = static_cast<rs::u8>(GPIO_NUM_NC),
+                .pin_a = static_cast<rs::u8>(GPIO_NUM_25),
+                .pin_b = static_cast<rs::u8>(GPIO_NUM_26),
                 .edge = Encoder::PinoutSettings::Edge::Rising,
             },
             .esp_now = {
