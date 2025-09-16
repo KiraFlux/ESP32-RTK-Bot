@@ -27,7 +27,6 @@ private:
     MotorPwmSettingsPage motor_pwm;
 
     EncoderConversionSettingsPage encoder_conversion;
-
     EncoderPinsSettingsPage left_encoder_pins, right_encoder_pins;
 
     EspnowNodeSettingsPage espnow_node;
@@ -38,12 +37,12 @@ public:
         save{"Save", [&storage](kf::Button &) { storage.save(); }},
         load{"Load", [&storage](kf::Button &) { storage.load(); }},
 
-        left_motor_driver{"Motor Driver Left", storage.settings.left_motor},
-        right_motor_driver{"Motor Driver Right", storage.settings.right_motor},
+        left_motor_driver{"Motor Driver L", storage.settings.left_motor},
+        right_motor_driver{"Motor Driver R", storage.settings.right_motor},
         motor_pwm{storage.settings.motor_pwm},
 
-        left_encoder_pins{"Encoder Pins Left", storage.settings.left_encoder},
-        right_encoder_pins{"Encoder Pins Right", storage.settings.right_encoder},
+        left_encoder_pins{"Encoder Pins L", storage.settings.left_encoder},
+        right_encoder_pins{"Encoder Pins R", storage.settings.right_encoder},
         encoder_conversion{storage.settings.encoder_conversion},
 
         espnow_node{storage.settings.espnow_node} {

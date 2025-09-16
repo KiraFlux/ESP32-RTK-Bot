@@ -50,7 +50,12 @@ static void onEspnowRemoteControllerPacket(const void *data, rs::u8 size) {
 
 static void sendTUI(kf::PageManager &page_manager) {
     const auto slice = page_manager.render();
-    const auto result = zms::Robot::instance().espnow_node.send(slice.data, slice.len);
+
+    const auto result = zms::Robot::instance().espnow_node.send(
+        slice.data,
+        std::min(slice.len, static_cast<rs::size>(ESP_NOW_MAX_DATA_LEN))
+    );
+
     if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
 }
 
