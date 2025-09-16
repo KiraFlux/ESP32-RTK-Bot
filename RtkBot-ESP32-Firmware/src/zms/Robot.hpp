@@ -2,7 +2,7 @@
 
 #include <kf/Storage.hpp>
 
-#include "tools/Singleton.hpp"
+#include "zms/tools/Singleton.hpp"
 
 #include "zms/drivers/Encoder.hpp"
 #include "zms/drivers/Motor.hpp"
