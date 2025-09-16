@@ -6,7 +6,7 @@
 #include "Robot.hpp"
 
 static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
-    enum class Code : rs::u8 {
+    enum Code : rs::u8 {
         None = 0x00,
         Reload = 0x10,
         Click = 0x20,
@@ -42,6 +42,36 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
     }
 }
 
+static void sendTUI(kf::PageManager &page_manager) {
+    const auto slice = page_manager.render();
+    const auto result = Robot::instance().esp_now.send(slice.data, slice.len);
+    if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
+}
+
+static void pollRemoteControl() {
+    static auto &remote_controller = RemoteController::instance();
+    static auto &robot = Robot::instance();
+    static bool disconnected{true};
+
+    if (remote_controller.isPacketTimeoutExpired()) {
+        if (not disconnected) {
+            kf_Logger_info("disconnected");
+            disconnected = true;
+
+            remote_controller.resetControlPacket();
+            robot.left_motor.stop();
+            robot.right_motor.stop();
+        }
+    } else {
+        disconnected = false;
+
+        float left_power, right_power;
+        remote_controller.calc(left_power, right_power);
+        robot.left_motor.set(left_power);
+        robot.right_motor.set(right_power);
+    }
+}
+
 void setup() {
     Serial.begin(115200);
     kf::Logger::instance().write_func = [](const char *buffer, size_t size) { Serial.write(buffer, size); };
@@ -58,7 +88,9 @@ void setup() {
         static MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, storage};
         static MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, storage};
 
-        kf::PageManager::instance().bind(MainPage::instance());
+        auto &page_manager = kf::PageManager::instance();
+        page_manager.bind(MainPage::instance());
+        sendTUI(page_manager);
     }
 
     kf_Logger_debug("init ok");
@@ -66,36 +98,9 @@ void setup() {
 
 void loop() {
     static auto &page_manager = kf::PageManager::instance();
-    static auto &dual_joystick = RemoteController::instance();
-    static auto &robot = Robot::instance();
+    if (page_manager.pollEvents()) { sendTUI(page_manager); }
 
-    if (page_manager.pollEvents()) {
-        const auto slice = page_manager.render();
-        const auto result = Robot::instance().esp_now.send(slice.data, slice.len);
-        if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
-    }
-
-    // DJC
-    {
-        static bool disconnected{true};
-        if (dual_joystick.isPacketTimeoutExpired()) {
-            if (not disconnected) {
-                kf_Logger_info("disconnected");
-                disconnected = true;
-
-                dual_joystick.resetControlPacket();
-                robot.left_motor.stop();
-                robot.right_motor.stop();
-            }
-        } else {
-            disconnected = false;
-
-            float left_power, right_power;
-            dual_joystick.calc(left_power, right_power);
-            robot.left_motor.set(left_power);
-            robot.right_motor.set(right_power);
-        }
-    }
+    pollRemoteControl();
 
     delay(1);
 }
