@@ -5,6 +5,8 @@
 
 #include "zms/tools/LowFrequencyFilter.hpp"
 
+namespace zms {
+
 /// Реализация PID регулятора с внешней зависимостью настроек
 struct PID {
 
@@ -57,3 +59,5 @@ public:
         last_error = NAN;
     }
 };
+
+}// namespace zms
