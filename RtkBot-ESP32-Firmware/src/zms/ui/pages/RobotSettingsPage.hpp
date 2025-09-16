@@ -3,51 +3,39 @@
 #include <kf/Text-UI.hpp>
 
 #include "zms/Robot.hpp"
+#include "zms/ui/pages/EncoderConvertaionSettingsPage.hpp"
+#include "zms/ui/pages/EncoderPinoutSettingsPage.hpp"
+#include "zms/ui/pages/EspnowNodeSettingsPage.hpp"
 #include "zms/ui/pages/MainPage.hpp"
+#include "zms/ui/pages/MotorDriverSettingsPage.hpp"
+#include "zms/ui/pages/MotorPwmSettingsPage.hpp"
 
 namespace zms {
 
-/// Страница настроек
+/// Страница настроек робота
 struct RobotSettingsPage final : kf::Page {
 
 private:
-    /// Записать настройки
+    /// Сохранить настройки
     kf::Button save;
 
-    /// Страница настроек драйверов моторов
-    struct MotorDriver final : kf::Page {
-        MotorDriver(const char *motor_name, Motor::DriverSettings &settings) :
-            Page{motor_name} {}
-    } left_motor_driver, right_motor_driver;
+    /// Загрузить настройки
+    kf::Button load;
 
-    /// Страница настроек ШИМ
-    struct MotorPwm final : kf::Page {
-        MotorPwm(Motor::PwmSettings &settings) :
-            Page{"Motor PWM"} {}
-    } motor_pwm;
+    MotorDriverSettingsPage left_motor_driver, right_motor_driver;
+    MotorPwmSettingsPage motor_pwm;
 
-    /// Страница настроек энкодера
-    struct EncoderConvertaion final : kf::Page {
-        EncoderConvertaion(Encoder::ConvertationSettings &settings) :
-            Page{"Enc Convertation"} {}
-    } encoder_convertation;
+    EncoderConvertaionSettingsPage encoder_convertation;
 
-    /// Страница настроек подключения энкодеров
-    struct EncoderPinout final : kf::Page {
-        EncoderPinout(const char *encoder_name, Encoder::PinoutSettings &settings) :
-            Page{encoder_name} {}
-    } left_encoder_pinout, right_encoder_pinout;
+    EncoderPinoutSettingsPage left_encoder_pinout, right_encoder_pinout;
 
-    /// Страница настроек узла Espnow
-    struct Espnow final : kf::Page {
-        Espnow(EspnowNode::Settings &settings) :
-            Page{"Espnow Node"} {}
-    } esp_now;
+    EspnowNodeSettingsPage espnow_node;
 
 public:
     explicit RobotSettingsPage(kf::Storage<Robot::Settings> &storage) :
         Page{storage.key},
-        save{"save", [&storage](kf::Button &) { storage.save(); }},
+        save{"Save", [&storage](kf::Button &) { storage.save(); }},
+        load{"Load", [&storage](kf::Button &) { storage.load(); }},
 
         left_motor_driver{"Motor Driver L", storage.settings.left_motor},
         right_motor_driver{"Motor Driver R", storage.settings.right_motor},
@@ -55,9 +43,9 @@ public:
 
         left_encoder_pinout{"Encoder Pinout L", storage.settings.left_encoder},
         right_encoder_pinout{"Encoder Pinout R", storage.settings.right_encoder},
-        encoder_convertation{storage.settings.generic_encoder},
+        encoder_convertation{storage.settings.encoder_convertation},
 
-        esp_now{storage.settings.esp_now}
+        espnow_node{storage.settings.espnow_node}
 
     {
         MainPage::instance().link(*this);
@@ -71,7 +59,7 @@ public:
         link(right_encoder_pinout);
         link(encoder_convertation);
 
-        link(esp_now);
+        link(espnow_node);
     }
 };
 

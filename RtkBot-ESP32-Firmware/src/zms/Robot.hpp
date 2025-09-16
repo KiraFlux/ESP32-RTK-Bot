@@ -23,12 +23,12 @@ struct Robot : Singleton<Robot> {
         Motor::DriverSettings left_motor, right_motor;
 
         /// Настройки преобразования энкодера
-        Encoder::ConvertationSettings generic_encoder;
+        Encoder::ConvertationSettings encoder_convertation;
         /// Настройки подключения энкодеров
         Encoder::PinoutSettings left_encoder, right_encoder;
 
         /// Настройки узла Espnow
-        EspnowNode::Settings esp_now;
+        EspnowNode::Settings espnow_node;
     };
 
     /// Хранилище настроек
@@ -52,7 +52,7 @@ struct Robot : Singleton<Robot> {
                 .speed_pin = static_cast<rs::u8>(GPIO_NUM_18),
                 .ledc_channel = 1,
             },
-            .generic_encoder = {
+            .encoder_convertation = {
                 .ticks_in_one_mm = 1.0f,
             },
             .left_encoder = {
@@ -65,7 +65,7 @@ struct Robot : Singleton<Robot> {
                 .pin_b = static_cast<rs::u8>(GPIO_NUM_26),
                 .edge = Encoder::PinoutSettings::Edge::Rising,
             },
-            .esp_now = {
+            .espnow_node = {
                 .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},
             }}};
 
@@ -76,13 +76,13 @@ struct Robot : Singleton<Robot> {
     Motor right_motor{storage.settings.right_motor, storage.settings.pwm};
 
     /// Левый Энкодер
-    Encoder left_encoder{storage.settings.left_encoder, storage.settings.generic_encoder};
+    Encoder left_encoder{storage.settings.left_encoder, storage.settings.encoder_convertation};
 
     /// Правый Энкодер
-    Encoder right_encoder{storage.settings.right_encoder, storage.settings.generic_encoder};
+    Encoder right_encoder{storage.settings.right_encoder, storage.settings.encoder_convertation};
 
     /// Узел протокола Espnow
-    EspnowNode esp_now{storage.settings.esp_now};
+    EspnowNode esp_now{storage.settings.espnow_node};
 
     /// Инициализировать всю периферию
     bool init() {
