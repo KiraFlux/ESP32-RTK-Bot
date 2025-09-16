@@ -44,7 +44,7 @@ struct MotorTunePage final : kf::Page {
         set_current_pwm_as_dead_zone{
             "Set DeadZone",
             [this, &storage](kf::Button &) {
-                storage.settings.pwm.dead_zone = current_pwm;
+                storage.settings.motor_pwm.dead_zone = current_pwm;
             }},
         re_init{
             "Re-Init",
@@ -84,7 +84,7 @@ struct MotorTunePage final : kf::Page {
         frequency_input{
             "Hz",
             FrequencyInput::Content{
-                storage.settings.pwm.ledc_frequency_hz,
+                storage.settings.motor_pwm.ledc_frequency_hz,
                 frequency_step,
                 FrequencyInput::Content::Mode::ArithmeticPositiveOnly}} {
         MainPage::instance().link(*this);

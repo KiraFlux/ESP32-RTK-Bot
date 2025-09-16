@@ -8,7 +8,8 @@
 #include "zms/ui/pages/MotorTunePage.hpp"
 #include "zms/ui/pages/RobotSettingsPage.hpp"
 
-static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
+
+static void onEspnowRemoteControllerPacket(const void *data, rs::u8 size) {
 
     /// Действие в меню
     enum Action : rs::u8 {
@@ -49,7 +50,7 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
 
 static void sendTUI(kf::PageManager &page_manager) {
     const auto slice = page_manager.render();
-    const auto result = zms::Robot::instance().esp_now.send(slice.data, slice.len);
+    const auto result = zms::Robot::instance().espnow_node.send(slice.data, slice.len);
     if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
 }
 
@@ -93,7 +94,7 @@ void setup() {
 
     auto &robot = zms::Robot::instance();
     robot.init();
-    robot.esp_now.on_receive = onEspnowRemoveControllerPacket;
+    robot.espnow_node.on_receive = onEspnowRemoteControllerPacket;
 
     auto &page_manager = kf::PageManager::instance();
     setupTUI(page_manager);

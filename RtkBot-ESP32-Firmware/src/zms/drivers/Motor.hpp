@@ -4,6 +4,7 @@
 #include <kf/Logger.hpp>
 #include <rs/aliases.hpp>
 
+
 namespace zms {
 
 /// Драйвер мотора (IArduino Motor Shield)

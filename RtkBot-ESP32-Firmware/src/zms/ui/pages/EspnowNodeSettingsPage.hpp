@@ -8,7 +8,7 @@ namespace zms {
 
 /// Страница настроек узла Espnow
 struct EspnowNodeSettingsPage final : kf::Page {
-    EspnowNodeSettingsPage(EspnowNode::Settings &settings) :
+    explicit EspnowNodeSettingsPage(EspnowNode::Settings &settings) :
         Page{"Espnow Node"} {}
 };
 

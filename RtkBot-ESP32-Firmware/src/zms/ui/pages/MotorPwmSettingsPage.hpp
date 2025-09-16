@@ -8,7 +8,7 @@ namespace zms {
 
 /// Страница настроек ШИМ
 struct MotorPwmSettingsPage final : kf::Page {
-    MotorPwmSettingsPage(Motor::PwmSettings &settings) :
+    explicit MotorPwmSettingsPage(Motor::PwmSettings &settings) :
         Page{"Motor PWM"} {}
 };
 

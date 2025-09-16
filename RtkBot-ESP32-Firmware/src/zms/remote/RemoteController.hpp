@@ -3,6 +3,7 @@
 #include "zms/tools/Singleton.hpp"
 #include "zms/tools/TimeoutManager.hpp"
 
+
 namespace zms {
 
 /// Работает с пакетами данных с пульта

@@ -4,11 +4,12 @@
 
 #include "zms/drivers/Encoder.hpp"
 
+
 namespace zms {
 
 /// Страница настроек подключения энкодеров
-struct EncoderPinoutSettingsPage final : kf::Page {
-    EncoderPinoutSettingsPage(const char *encoder_name, Encoder::PinoutSettings &settings) :
+struct EncoderPinsSettingsPage final : kf::Page {
+    explicit EncoderPinsSettingsPage(const char *encoder_name, Encoder::PinsSettings &settings) :
         Page{encoder_name} {}
 };
 
