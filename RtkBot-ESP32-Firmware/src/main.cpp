@@ -56,8 +56,8 @@ static void sendTUI(kf::PageManager &page_manager) {
 static void setupTUI(kf::PageManager &page_manager) {
     auto &robot = zms::Robot::instance();
     static RobotSettingsPage robot_settings_page{robot.storage};
-    static MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, robot.storage};
-    static MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, robot.storage};
+    static zms::MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, robot.storage};
+    static zms::MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, robot.storage};
 
     page_manager.bind(MainPage::instance());
 }

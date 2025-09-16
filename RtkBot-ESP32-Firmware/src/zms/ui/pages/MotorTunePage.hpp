@@ -1,10 +1,13 @@
 #pragma once
 
 #include <kf/Text-UI.hpp>
+#include <rs/aliases.hpp>
 
 #include "zms/Robot.hpp"
 #include "zms/ui/pages/MainPage.hpp"
 #include "zms/ui/widgets/EventObserver.hpp"
+
+namespace zms {
 
 /// Страница настройки моторов
 struct MotorTunePage final : kf::Page {
@@ -21,7 +24,7 @@ struct MotorTunePage final : kf::Page {
     PwmDuty current_pwm{0};
     const PwmDuty pwm_step_step{2};
 
-    using NormalizedInput = EventObserver<kf::Labeled<kf::SpinBox<float>>>;
+    using NormalizedInput = EventObserver<kf::Labeled<kf::SpinBox<rs::f32>>>;
     using NormalizedValue = NormalizedInput::Observable::Content::Scalar;
     using NormalizedValueStepInput = kf::Labeled<kf::SpinBox<NormalizedValue>>;
 
@@ -94,3 +97,5 @@ struct MotorTunePage final : kf::Page {
         add(re_init);
     }
 };
+
+}// namespace zms
