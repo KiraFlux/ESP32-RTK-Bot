@@ -2,7 +2,7 @@
 
 #include <kf/Text-UI.hpp>
 
-#include "zms/ui/widgets/CheckBox.hpp"
+#include "zms/ui/widgets/ComboBox.hpp"
 #include "zms/drivers/Motor.hpp"
 
 
@@ -12,7 +12,7 @@ namespace zms {
 struct MotorDriverSettingsPage final : kf::Page {
 
     /// Направление движения
-    CheckBox<Motor::DriverSettings::Direction, 2> direction;
+    ComboBox<Motor::DriverSettings::Direction, 2> direction;
 
     MotorDriverSettingsPage(const char *motor_name, Motor::DriverSettings &settings) :
         Page{motor_name},

@@ -7,6 +7,7 @@
 #include "zms/ui/pages/MainPage.hpp"
 #include "zms/ui/widgets/EventObserver.hpp"
 
+
 namespace zms {
 
 /// Страница настройки моторов
@@ -45,48 +46,62 @@ struct MotorTunePage final : kf::Page {
             "Set DeadZone",
             [this, &storage](kf::Button &) {
                 storage.settings.motor_pwm.dead_zone = current_pwm;
-            }},
+            }
+        },
         re_init{
             "Re-Init",
             [&motor](kf::Button &) {
                 motor.init();
-            }},
+            }
+        },
         pwm_input{
             PwmInput::Observable{
                 "PWM",
                 PwmInput::Observable::Content{
                     current_pwm,
-                    pwm_step}},
+                    pwm_step
+                }
+            },
             [this, &motor](kf::Event) {
                 motor.write(current_pwm);
-            }},
+            }
+        },
         pwm_step_input{
             "Step",
             PwmStepInput::Content{
                 pwm_step,
                 pwm_step_step,
-                PwmStepInput::Content::Mode::Geometric}},
+                PwmStepInput::Content::Mode::Geometric
+            }
+        },
         normalized_input{
             NormalizedInput::Observable{
                 "Norm",
                 NormalizedInput::Observable::Content{
                     current_normalized_value,
-                    normalized_value_step}},
+                    normalized_value_step
+                }
+            },
             [this, &motor](kf::Event) {
                 motor.set(current_normalized_value);
-            }},
+            }
+        },
         normalized_value_step_input{
             "Step",
             NormalizedValueStepInput::Content{
                 normalized_value_step,
                 normalized_value_step_step,
-                NormalizedValueStepInput::Content::Mode::Geometric}},
+                NormalizedValueStepInput::Content::Mode::Geometric
+            }
+        },
         frequency_input{
             "Hz",
             FrequencyInput::Content{
                 storage.settings.motor_pwm.ledc_frequency_hz,
                 frequency_step,
-                FrequencyInput::Content::Mode::ArithmeticPositiveOnly}} {
+                FrequencyInput::Content::Mode::ArithmeticPositiveOnly
+            }
+        } {
         MainPage::instance().link(*this);
         add(pwm_input);
         add(pwm_step_input);

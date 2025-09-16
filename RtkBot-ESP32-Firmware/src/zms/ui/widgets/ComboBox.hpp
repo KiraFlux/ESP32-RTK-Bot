@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <utility>
 
 #include <kf/Text-UI.hpp>
 #include <rs/aliases.hpp>
@@ -9,7 +8,7 @@
 
 namespace zms {
 
-template<typename T, rs::size N> struct CheckBox final : kf::Widget {
+template<typename T, rs::size N> struct ComboBox final : kf::Widget {
     static_assert(N >= 1, "N >= 1");
 
 public:
@@ -29,15 +28,17 @@ private:
 
 public:
 
-    explicit CheckBox(Container items, T &val) :
+    explicit ComboBox(Container items, T &val) :
         items{std::move(items)}, value{val} {}
 
     bool onEvent(kf::Event event) override {
-        if (event == kf::Event::ChangeDecrement and moveCursor(-1)) {
+        if (event == kf::Event::ChangeDecrement) {
+            moveCursor(-1);
             value = items[cursor].value;
             return true;
         }
-        if (event == kf::Event::ChangeIncrement and moveCursor(+1)) {
+        if (event == kf::Event::ChangeIncrement) {
+            moveCursor(+1);
             value = items[cursor].value;
             return true;
         }
@@ -52,11 +53,10 @@ public:
 
 private:
 
-    bool moveCursor(int d) {
-        const auto old_cursor = cursor;
+    void moveCursor(int d) {
         cursor += d;
-        cursor = (constrain(cursor, 0, N - 1));
-        return old_cursor != cursor;
+        cursor += N;
+        cursor %= N;
     }
 
 };
