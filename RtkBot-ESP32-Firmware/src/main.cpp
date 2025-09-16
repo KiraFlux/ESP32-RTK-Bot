@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <kf/Logger.hpp>
 
-#include "Alpha-UI.hpp"
-#include "RemoteController.hpp"
-#include "Robot.hpp"
+#include "zms/remote/RemoteController.hpp"
+#include "zms/Robot.hpp"
+#include "zms/ui/Alpha-UI.hpp"
 
 static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
 

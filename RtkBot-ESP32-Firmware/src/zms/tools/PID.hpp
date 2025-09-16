@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <rs/aliases.hpp>
 
-#include "tools/LowFrequencyFilter.hpp"
+#include "LowFrequencyFilter.hpp"
 
 /// Реализация PID регулятора с внешней зависимостью настроек
 struct PID {

@@ -4,9 +4,9 @@
 
 #include "tools/Singleton.hpp"
 
-#include "drivers/Encoder.hpp"
-#include "drivers/Espnow.hpp"
-#include "drivers/Motor.hpp"
+#include "zms/drivers/Encoder.hpp"
+#include "zms/drivers/Motor.hpp"
+#include "zms/remote/Espnow.hpp"
 
 /// Аппаратное обеспечение робота
 struct Robot : Singleton<Robot> {

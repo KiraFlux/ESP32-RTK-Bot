@@ -3,7 +3,7 @@
 #include <kf/Text-UI.hpp>
 #include <utility>
 
-#include "Robot.hpp"
+#include "zms/Robot.hpp"
 
 /// Основная страница
 struct MainPage final : kf::Page, Singleton<MainPage> {

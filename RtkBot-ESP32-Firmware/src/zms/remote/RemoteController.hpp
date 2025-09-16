@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tools/Singleton.hpp"
-#include "tools/TimeoutManager.hpp"
+#include "zms/tools/Singleton.hpp"
+#include "zms/tools/TimeoutManager.hpp"
 
 /// Работает с пакетами данных с пульта
 struct RemoteController : Singleton<RemoteController> {
