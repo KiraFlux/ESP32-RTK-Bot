@@ -2,7 +2,6 @@
 
 #include <Arduino.h>
 
-
 /// Служба для отслеживания момента истечения допустимого таймаута
 struct TimeoutManager final {
 
@@ -10,14 +9,12 @@ struct TimeoutManager final {
     using Ms = decltype(millis());
 
 private:
-
     /// Таймаут
     Ms timeout;
     /// Время следующего таймаута
     Ms next_timeout{0};
 
 public:
-
     explicit TimeoutManager(Ms timeout_duration) :
         timeout{timeout_duration} {}
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "tools/Singleton.hpp"
 #include "tools/TimeoutManager.hpp"
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-
 #include <kf/Logger.hpp>
 #include <rs/aliases.hpp>
 

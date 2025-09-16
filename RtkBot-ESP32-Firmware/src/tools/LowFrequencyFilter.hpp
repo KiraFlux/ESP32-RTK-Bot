@@ -29,7 +29,7 @@ public:
         filtered = filtered * one_minus_alpha + x * alpha;
         return filtered;
     }
-    
+
     /// Сбросить значение фильтра
     void reset() {
         first_step = true;

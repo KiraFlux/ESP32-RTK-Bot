@@ -2,17 +2,14 @@
 
 #include <Arduino.h>
 
-
 /// Хронометр
 struct Chronometer final {
 
 private:
-
     /// Время предыдущего измерения
     decltype(micros()) last_us{micros()};
 
 public:
-
     /// Рассчитать дельту между вызовами
     /// @returns dt Сек.
     float calc() noexcept {

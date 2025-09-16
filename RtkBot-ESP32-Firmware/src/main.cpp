@@ -6,7 +6,7 @@
 #include "Robot.hpp"
 
 static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
-    
+
     /// Действие в меню
     enum Action : rs::u8 {
         None = 0x00,
@@ -50,6 +50,15 @@ static void sendTUI(kf::PageManager &page_manager) {
     if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
 }
 
+static void setupTUI(kf::PageManager &page_manager) {
+    auto &robot = Robot::instance();
+    static RobotSettingsPage robot_settings_page{robot.storage};
+    static MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, robot.storage};
+    static MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, robot.storage};
+
+    page_manager.bind(MainPage::instance());
+}
+
 static void pollRemoteControl() {
     static auto &remote_controller = RemoteController::instance();
     static auto &robot = Robot::instance();
@@ -83,17 +92,9 @@ void setup() {
     robot.init();
     robot.esp_now.on_receive = onEspnowRemoveControllerPacket;
 
-    // TUI setup
-    {
-        auto &storage = Robot::instance().storage;
-        static RobotSettingsPage robot_settings_page{storage};
-        static MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, storage};
-        static MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, storage};
-
-        auto &page_manager = kf::PageManager::instance();
-        page_manager.bind(MainPage::instance());
-        sendTUI(page_manager);
-    }
+    auto &page_manager = kf::PageManager::instance();
+    setupTUI(page_manager);
+    sendTUI(page_manager);
 
     kf_Logger_debug("init ok");
 }
