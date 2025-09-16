@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+namespace zms {
+
 /// Служба для отслеживания момента истечения допустимого таймаута
 struct TimeoutManager final {
 
@@ -27,3 +29,5 @@ public:
     /// @returns <code>true</code> если таймаут просрочен
     inline bool expired() const { return millis() >= next_timeout; }
 };
+
+}// namespace zms

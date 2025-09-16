@@ -1,5 +1,7 @@
 #pragma once
 
+namespace zms {
+
 template<typename T> struct ComplementaryFilter {
 
 private:
@@ -28,3 +30,5 @@ public:
         first_step = true;
     }
 };
+
+}// namespace zms

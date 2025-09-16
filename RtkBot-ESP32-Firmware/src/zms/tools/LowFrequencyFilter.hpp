@@ -1,5 +1,7 @@
 #pragma once
 
+namespace zms {
+
 /// @brief Низкочастотный фильтры
 /// @tparam T Скаляр
 template<typename T> struct LowFrequencyFilter {
@@ -35,3 +37,5 @@ public:
         first_step = true;
     }
 };
+
+}// namespace zms

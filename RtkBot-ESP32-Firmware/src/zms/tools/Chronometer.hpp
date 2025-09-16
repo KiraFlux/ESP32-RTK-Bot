@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+namespace zms {
+
 /// Хронометр
 struct Chronometer final {
 
@@ -19,3 +21,5 @@ public:
         return static_cast<decltype(calc())>(delta_us) * 1e-6f;
     }
 };
+
+}// namespace zms
