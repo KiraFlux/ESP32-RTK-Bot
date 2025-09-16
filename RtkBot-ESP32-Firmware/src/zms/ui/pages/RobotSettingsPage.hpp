@@ -5,6 +5,8 @@
 #include "zms/Robot.hpp"
 #include "zms/ui/pages/MainPage.hpp"
 
+namespace zms {
+
 /// Страница настроек
 struct RobotSettingsPage final : kf::Page {
     kf::Button save_button;
@@ -16,3 +18,5 @@ struct RobotSettingsPage final : kf::Page {
         add(save_button);
     }
 };
+
+}// namespace zms
