@@ -35,8 +35,8 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
     };
 
     switch (size) {
-        case sizeof(RemoteController::ControlPacket)://
-            RemoteController::instance().updateControlPacket(*static_cast<const RemoteController::ControlPacket *>(data));
+        case sizeof(zms::RemoteController::ControlPacket)://
+            zms::RemoteController::instance().updateControlPacket(*static_cast<const zms::RemoteController::ControlPacket *>(data));
             return;
 
         case sizeof(Action)://
@@ -63,7 +63,7 @@ static void setupTUI(kf::PageManager &page_manager) {
 }
 
 static void pollRemoteControl() {
-    static auto &remote_controller = RemoteController::instance();
+    static auto &remote_controller = zms::RemoteController::instance();
     static auto &robot = zms::Robot::instance();
     static bool disconnected{true};
 

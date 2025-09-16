@@ -7,8 +7,10 @@
 
 #include <kf/Logger.hpp>
 
+namespace zms {
+
 /// Узел Espnow
-struct Espnow {
+struct EspnowNode {
 
 public:
     /// Настройки узла
@@ -25,7 +27,7 @@ public:
     /// Обработчик входящего пакета от пульта
     std::function<void(const void *, rs::u8)> on_receive{nullptr};
 
-    explicit Espnow(const Settings &settings) :
+    explicit EspnowNode(const Settings &settings) :
         settings{settings} {}
 
     /// Инициализировать протокол
@@ -73,3 +75,5 @@ public:
         return espnow::Protocol::send(settings.remote_controller_mac, data, size);
     }
 };
+
+}// namespace zms

@@ -28,7 +28,7 @@ struct Robot : Singleton<Robot> {
         Encoder::PinoutSettings left_encoder, right_encoder;
 
         /// Настройки узла Espnow
-        Espnow::Settings esp_now;
+        EspnowNode::Settings esp_now;
     };
 
     /// Хранилище настроек
@@ -82,7 +82,7 @@ struct Robot : Singleton<Robot> {
     Encoder right_encoder{storage.settings.right_encoder, storage.settings.generic_encoder};
 
     /// Узел протокола Espnow
-    Espnow esp_now{storage.settings.esp_now};
+    EspnowNode esp_now{storage.settings.esp_now};
 
     /// Инициализировать всю периферию
     bool init() {

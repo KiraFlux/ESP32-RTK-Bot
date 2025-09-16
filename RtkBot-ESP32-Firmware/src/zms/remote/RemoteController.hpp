@@ -3,6 +3,8 @@
 #include "zms/tools/Singleton.hpp"
 #include "zms/tools/TimeoutManager.hpp"
 
+namespace zms {
+
 /// Работает с пакетами данных с пульта
 struct RemoteController : Singleton<RemoteController> {
     friend struct Singleton<RemoteController>;
@@ -46,3 +48,5 @@ public:
         packet_timeout_manager.update();
     }
 };
+
+}// namespace zms
