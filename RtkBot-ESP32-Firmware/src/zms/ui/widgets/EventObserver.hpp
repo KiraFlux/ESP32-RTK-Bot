@@ -2,6 +2,8 @@
 
 #include <kf/Text-UI.hpp>
 
+namespace zms {
+
 template<typename W> struct EventObserver : kf::Widget {
     static_assert((std::is_base_of<kf::Widget, W>::value), "W must be a kf::Widget Subclass");
 
@@ -25,3 +27,5 @@ public:
         w.doRender(stream);
     }
 };
+
+}// namespace zms
