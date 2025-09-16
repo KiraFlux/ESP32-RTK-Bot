@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <rs/aliases.hpp>
 
+namespace zms {
+
 /// Энкодер инкреметальный с двумя фазами
 struct Encoder {
 
@@ -97,3 +99,5 @@ private:
         }
     }
 };
+
+}// namespace zms

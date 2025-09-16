@@ -4,6 +4,8 @@
 #include <kf/Logger.hpp>
 #include <rs/aliases.hpp>
 
+namespace zms {
+
 /// Драйвер мотора (IArduino Motor Shield)
 struct Motor {
 
@@ -136,3 +138,5 @@ private:
         return static_cast<SignedPwm>(ret);
     }
 };
+
+}// namespace zms
