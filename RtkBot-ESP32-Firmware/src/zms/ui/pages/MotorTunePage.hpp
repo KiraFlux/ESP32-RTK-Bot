@@ -1,53 +1,10 @@
 #pragma once
 
 #include <kf/Text-UI.hpp>
-#include <utility>
 
 #include "zms/Robot.hpp"
-
-/// Основная страница
-struct MainPage final : kf::Page, Singleton<MainPage> {
-    friend struct Singleton<MainPage>;
-
-    explicit MainPage() :
-        Page{"Main"} {}
-};
-
-/// Страница настроек
-struct RobotSettingsPage final : kf::Page {
-    kf::Button save_button;
-
-    explicit RobotSettingsPage(kf::Storage<Robot::Settings> &storage) :
-        Page{storage.key},
-        save_button{"save", [&storage](kf::Button &) { storage.save(); }} {
-        MainPage::instance().link(*this);
-        add(save_button);
-    }
-};
-
-template<typename W> struct EventObserver : kf::Widget {
-    static_assert((std::is_base_of<kf::Widget, W>::value), "W must be a kf::Widget Subclass");
-
-private:
-    std::function<void(kf::Event)> handler;
-    W w;
-
-public:
-    using Observable = W;
-
-    explicit EventObserver(W w, std::function<void(kf::Event)> _handler) :
-        w{std::move(w)}, handler{std::move(_handler)} {}
-
-    bool onEvent(kf::Event event) override {
-        const auto ret = w.onEvent(event);
-        if (handler) { handler(event); }
-        return ret;
-    }
-
-    void doRender(kf::TextStream &stream) const override {
-        w.doRender(stream);
-    }
-};
+#include "zms/ui/pages/MainPage.hpp"
+#include "zms/ui/widgets/EventObserver.hpp"
 
 /// Страница настройки моторов
 struct MotorTunePage final : kf::Page {
