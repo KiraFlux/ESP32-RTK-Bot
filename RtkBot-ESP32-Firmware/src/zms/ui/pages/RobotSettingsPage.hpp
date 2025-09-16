@@ -11,7 +11,6 @@ namespace zms {
 struct RobotSettingsPage final : kf::Page {
 
 private:
-
     /// Записать настройки
     kf::Button save;
 
@@ -71,6 +70,8 @@ public:
         link(left_encoder_pinout);
         link(right_encoder_pinout);
         link(encoder_convertation);
+
+        link(esp_now);
     }
 };
 
