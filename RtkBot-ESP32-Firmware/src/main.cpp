@@ -6,7 +6,9 @@
 #include "Robot.hpp"
 
 static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
-    enum Code : rs::u8 {
+    
+    /// Действие в меню
+    enum Action : rs::u8 {
         None = 0x00,
         Reload = 0x10,
         Click = 0x20,
@@ -16,15 +18,15 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
         Down = 0x41
     };
 
-    auto translate = [](Code code) -> kf::Event {
+    auto translate = [](Action code) -> kf::Event {
         switch (code) {
-            case Code::Reload: return kf::Event::Update;
-            case Code::Click: return kf::Event::Click;
-            case Code::Left: return kf::Event::ChangeIncrement;
-            case Code::Right: return kf::Event::ChangeDecrement;
-            case Code::Up: return kf::Event::ElementPrevious;
-            case Code::Down: return kf::Event::ElementNext;
-            case Code::None:
+            case Action::Reload: return kf::Event::Update;
+            case Action::Click: return kf::Event::Click;
+            case Action::Left: return kf::Event::ChangeIncrement;
+            case Action::Right: return kf::Event::ChangeDecrement;
+            case Action::Up: return kf::Event::ElementPrevious;
+            case Action::Down: return kf::Event::ElementNext;
+            case Action::None:
             default: return kf::Event::None;
         }
     };
@@ -34,8 +36,8 @@ static void onEspnowRemoveControllerPacket(const void *data, rs::u8 size) {
             RemoteController::instance().updateControlPacket(*static_cast<const RemoteController::ControlPacket *>(data));
             return;
 
-        case sizeof(Code)://
-            kf::PageManager::instance().addEvent(translate(*static_cast<const Code *>(data)));
+        case sizeof(Action)://
+            kf::PageManager::instance().addEvent(translate(*static_cast<const Action *>(data)));
             return;
 
         default: kf_Logger_warn("Unknown packet: (%d bytes)", size);
