@@ -10,7 +10,6 @@
 #include "zms/ui/pages/MotorDriverSettingsPage.hpp"
 #include "zms/ui/pages/MotorPwmSettingsPage.hpp"
 
-
 namespace zms {
 
 /// Страница настроек робота
