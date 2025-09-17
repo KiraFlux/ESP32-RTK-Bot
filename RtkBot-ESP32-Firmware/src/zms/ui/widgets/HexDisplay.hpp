@@ -14,7 +14,9 @@ public:
     explicit HexDisplay(kf::TextStream::Slice v) :
         view{std::move(v)} {}
 
-    bool onEvent(kf::Event event) override {}
+    bool onEvent(kf::Event event) override {
+        return false;
+    }
 
     void doRender(kf::TextStream &stream) const override {
         for (rs::size i = 0; i < view.len; i += 1) {
