@@ -22,6 +22,7 @@ private:
     /// Загрузить настройки
     kf::Button load;
 
+public:
     MotorDriverSettingsPage left_motor_driver, right_motor_driver;
     MotorPwmSettingsPage motor_pwm;
 
@@ -30,7 +31,6 @@ private:
 
     EspnowNodeSettingsPage espnow_node;
 
-public:
     explicit RobotSettingsPage(kf::Storage<Robot::Settings> &storage) :
         Page{storage.key},
         save{"Save", [&storage](kf::Button &) { storage.save(); }},

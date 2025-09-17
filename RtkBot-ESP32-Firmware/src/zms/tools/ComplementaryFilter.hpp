@@ -1,5 +1,7 @@
 #pragma once
 
+#include "zms/aliases.hpp"
+
 namespace zms {
 
 template<typename T> struct ComplementaryFilter {
@@ -14,7 +16,7 @@ public:
     explicit ComplementaryFilter(float alpha) :
         alpha{alpha} {}
 
-    const T &calc(T x, T dx, float dt) {
+    const T &calc(T x, T dx, Seconds dt) {
         if (first_step) {
             first_step = false;
             filtered = x;

@@ -2,22 +2,21 @@
 
 #include <Arduino.h>
 
+#include "zms/aliases.hpp"
+
 namespace zms {
 
 /// Служба для отслеживания момента истечения допустимого таймаута
 struct TimeoutManager final {
 
-    /// Псевдоним для явного обозначения миллисекунд
-    using Ms = decltype(millis());
-
 private:
     /// Таймаут
-    Ms timeout;
+    Milliseconds timeout;
     /// Время следующего таймаута
-    Ms next_timeout{0};
+    Milliseconds next_timeout{0};
 
 public:
-    explicit TimeoutManager(Ms timeout_duration) :
+    explicit TimeoutManager(Milliseconds timeout_duration) :
         timeout{timeout_duration} {}
 
     /// Обновление таймаута

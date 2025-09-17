@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
-#include <rs/aliases.hpp>
 
+#include "zms/aliases.hpp"
 
 namespace zms {
 
@@ -11,9 +11,6 @@ struct Encoder {
 
     /// Псевдоним типа для положения энкодера в отсчётах (ticks)
     using Ticks = rs::i32;
-
-    /// Псевдоним типа для положения энкодера в миллиметрах (mm)
-    using Millimeters = rs::f64;
 
     /// Настройки преобразований
     struct ConversionSettings {
