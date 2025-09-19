@@ -44,12 +44,9 @@ struct Encoder {
     const PinsSettings &pins;
     /// Настройки преобразования
     const ConversionSettings &conversion;
-
-private:
     /// Текущее положение энкодера в отсчётах
     Ticks position{0};
 
-public:
     explicit Encoder(const PinsSettings &pins_settings, const ConversionSettings &conversion_settings) :
         pins{pins_settings}, conversion{conversion_settings} {}
 

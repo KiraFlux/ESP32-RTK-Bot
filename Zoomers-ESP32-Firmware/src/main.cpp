@@ -4,6 +4,7 @@
 
 #include "zms/Robot.hpp"
 #include "zms/remote/RemoteController.hpp"
+#include "zms/ui/pages/EncoderTunePage.hpp"
 #include "zms/ui/pages/MainPage.hpp"
 #include "zms/ui/pages/MotorTunePage.hpp"
 #include "zms/ui/pages/RobotSettingsPage.hpp"
@@ -62,8 +63,10 @@ static void sendTUI(kf::PageManager &page_manager) {
 static void setupTUI(kf::PageManager &page_manager) {
     auto &robot = zms::Robot::instance();
     static zms::RobotSettingsPage robot_settings_page{robot.storage};
-    static zms::MotorTunePage test_left_motor_page{"Tune-MotorLeft", robot.left_motor, robot.storage};
-    static zms::MotorTunePage test_right_motor_page{"Tune-MotorRight", robot.right_motor, robot.storage};
+    static zms::MotorTunePage left_motor_tune_page{"Tune-MotorLeft", robot.left_motor, robot.storage};
+    static zms::MotorTunePage right_motor_tune_page{"Tune-MotorRight", robot.right_motor, robot.storage};
+    static zms::EncoderTunePage left_encoder_tune_page{"Tune-EncoderLeft", robot.left_encoder};
+    static zms::EncoderTunePage right_encoder_tune_page{"Tune-EncoderRight", robot.right_encoder};
 
     page_manager.bind(zms::MainPage::instance());
 }
