@@ -8,7 +8,6 @@
 #include "zms/ui/pages/MotorTunePage.hpp"
 #include "zms/ui/pages/RobotSettingsPage.hpp"
 
-
 static void onEspnowRemoteControllerPacket(const void *data, rs::u8 size) {
 
     /// Действие в меню
@@ -53,8 +52,7 @@ static void sendTUI(kf::PageManager &page_manager) {
 
     const auto result = zms::Robot::instance().espnow_node.send(
         slice.data,
-        std::min(slice.len, static_cast<rs::size>(ESP_NOW_MAX_DATA_LEN))
-    );
+        std::min(slice.len, static_cast<rs::size>(ESP_NOW_MAX_DATA_LEN)));
 
     kf_Logger_error("Send: %d bytes", slice.len);
 
