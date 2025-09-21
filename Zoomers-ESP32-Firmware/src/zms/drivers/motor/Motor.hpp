@@ -1,9 +1,8 @@
 #pragma once
 
+#include "kf/Logger.hpp"
+#include "rs/aliases.hpp"
 #include <Arduino.h>
-#include <kf/Logger.hpp>
-#include <rs/aliases.hpp>
-
 
 namespace zms {
 
@@ -13,21 +12,25 @@ struct Motor {
     /// Псевдоним типа для значения ШИМ
     using SignedPwm = rs::i16;
 
+    /// Определяет направление положительного вращения
+    enum class Direction : rs::u8 {
+        /// Положительное вращение - по часовой
+        CW = 0x00,
+        /// Положительное вращение - против часовой
+        CCW = 0x01
+    };
+
     /// Настройки драйвера
     struct DriverSettings {
 
-        /// Определяет направление положительного вращения
-        enum class Direction : rs::u8 {
-            /// Положительное вращение по часовой
-            CW,
-            /// Положительное вращение против часовой
-            CCW
-        } direction;
+        Direction direction;
 
-        /// Пин направления (H-bridge)
+        /// IArduino Motor Shield: Пин направления (H-bridge)
         rs::u8 direction_pin;
-        /// Пин скорости (Enable)
+
+        /// IArduino Motor Shield: Пин скорости (Enable)
         rs::u8 speed_pin;
+
         /// Канал (0 .. 15)
         rs::u8 ledc_channel;
 
@@ -103,9 +106,10 @@ public:
     }
 
     /// Установить значение в нормализованной величине
-    void set(float value) const {
-        write(fromNormalized(value));
-    }
+    void set(float value) const { write(fromNormalized(value)); }
+
+    /// Остановить мотор
+    inline void stop() const { write(0); }
 
     /// Установить значение ШИМ + направление
     /// @param pwm Значение - ШИМ, Знак - направление
@@ -115,16 +119,10 @@ public:
         ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
     }
 
-    /// Остановить мотор
-    void stop() const {
-        digitalWrite(driver_settings.direction_pin, LOW);
-        ledcWrite(driver_settings.ledc_channel, 0);
-    }
-
 private:
     inline bool matchDirection(SignedPwm pwm) const {
         const bool positive = pwm > 0;
-        return driver_settings.direction == DriverSettings::Direction::CW == positive;
+        return driver_settings.direction == Direction::CW == positive;
     }
 
     SignedPwm fromNormalized(float value) const {

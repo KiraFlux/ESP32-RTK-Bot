@@ -5,7 +5,7 @@
 #include "zms/tools/Singleton.hpp"
 
 #include "zms/drivers/Encoder.hpp"
-#include "zms/drivers/Motor.hpp"
+#include "zms/drivers/motor/Motor.hpp"
 #include "zms/remote/Espnow.hpp"
 
 /// MISIS-Zoomers

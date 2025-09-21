@@ -2,9 +2,8 @@
 
 #include <kf/Text-UI.hpp>
 
+#include "zms/drivers/motor/Motor.hpp"
 #include "zms/ui/widgets/ComboBox.hpp"
-#include "zms/drivers/Motor.hpp"
-
 
 namespace zms {
 

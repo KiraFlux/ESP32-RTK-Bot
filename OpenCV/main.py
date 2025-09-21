@@ -2,7 +2,6 @@ import time
 from typing import Sequence
 
 import cv2
-import imutils
 from imutils.video import VideoStream
 
 
@@ -51,7 +50,9 @@ def _start():
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
             barcode_data = data
-            text = f'{barcode_data}'
+
+            text = str(barcode_data)
+
             print(text)
             cv2.putText(frame, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 

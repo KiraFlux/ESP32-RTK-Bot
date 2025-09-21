@@ -2,7 +2,7 @@
 
 #include <kf/Text-UI.hpp>
 
-#include "zms/drivers/Motor.hpp"
+#include "zms/drivers/motor/Motor.hpp"
 
 namespace zms {
 
