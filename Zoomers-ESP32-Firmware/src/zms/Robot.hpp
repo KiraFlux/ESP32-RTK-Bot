@@ -5,7 +5,7 @@
 #include "zms/tools/Singleton.hpp"
 
 #include "zms/drivers/Encoder.hpp"
-#include "zms/drivers/motor/Motor.hpp"
+#include "zms/drivers/Motor.hpp"
 #include "zms/remote/Espnow.hpp"
 
 /// MISIS-Zoomers
@@ -48,15 +48,15 @@ struct Robot : Singleton<Robot> {
                 .dead_zone = 568,// Значение получено экспериментально
             },
             .left_motor = {
-                .direction = Motor::DriverSettings::Direction::CCW,
-                .direction_pin = static_cast<rs::u8>(GPIO_NUM_27),
-                .speed_pin = static_cast<rs::u8>(GPIO_NUM_21),
+                .direction = Motor::Direction::CCW,
+                .pin_a = static_cast<rs::u8>(GPIO_NUM_27),
+                .pin_b = static_cast<rs::u8>(GPIO_NUM_21),
                 .ledc_channel = 0,
             },
             .right_motor = {
-                .direction = Motor::DriverSettings::Direction::CW,
-                .direction_pin = static_cast<rs::u8>(GPIO_NUM_19),
-                .speed_pin = static_cast<rs::u8>(GPIO_NUM_18),
+                .direction = Motor::Direction::CW,
+                .pin_a = static_cast<rs::u8>(GPIO_NUM_19),
+                .pin_b = static_cast<rs::u8>(GPIO_NUM_18),
                 .ledc_channel = 1,
             },
             .encoder_conversion = {
@@ -74,9 +74,7 @@ struct Robot : Singleton<Robot> {
             },
             .espnow_node = {
                 .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},
-            }
-        }
-    };
+            }}};
 
     /// Левый мотор
     Motor left_motor{storage.settings.left_motor, storage.settings.motor_pwm};

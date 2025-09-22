@@ -4,6 +4,9 @@
 
 #include "zms/aliases.hpp"
 
+/// Обработчик прерывания на основной фазе
+static void IRAM_ATTR encoderInterruptHandler(void *);
+
 namespace zms {
 
 /// Энкодер инкрементальный с двумя фазами
@@ -60,7 +63,7 @@ struct Encoder {
     void enable() {
         attachInterruptArg(
             pins.phase_a,
-            Encoder::InterruptHandler,
+            encoderInterruptHandler,
             static_cast<void *>(this),
             static_cast<int>(pins.edge));
     }
@@ -81,18 +84,16 @@ struct Encoder {
 
     /// Установить положение энкодера в мм
     void setPositionMillimeters(Millimeters new_position) { position = conversion.toTicks(new_position); }
-
-private:
-    /// Обработчик прерывания на основной фазе
-    static void IRAM_ATTR InterruptHandler(void *instance) {
-        auto &encoder = *static_cast<Encoder *>(instance);
-
-        if (digitalRead(encoder.pins.phase_b)) {
-            encoder.position += 1;
-        } else {
-            encoder.position -= 1;
-        }
-    }
 };
 
 }// namespace zms
+
+void encoderInterruptHandler(void *instance) {
+    auto &encoder = *static_cast<zms::Encoder *>(instance);
+
+    if (digitalRead(encoder.pins.phase_b)) {
+        encoder.position += 1;
+    } else {
+        encoder.position -= 1;
+    }
+}

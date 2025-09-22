@@ -1,8 +1,10 @@
 #pragma once
 
-#include "kf/Logger.hpp"
-#include "rs/aliases.hpp"
 #include <Arduino.h>
+#include <kf/Logger.hpp>
+#include <rs/aliases.hpp>
+
+#include "zms/config.hpp"
 
 namespace zms {
 
@@ -25,11 +27,13 @@ struct Motor {
 
         Direction direction;
 
-        /// IArduino Motor Shield: Пин направления (H-bridge)
-        rs::u8 direction_pin;
+        /// IArduino Motor Sheid: Пин направления (H-bridge)
+        /// L293N Module: IN1 / IN3
+        rs::u8 pin_a;
 
-        /// IArduino Motor Shield: Пин скорости (Enable)
-        rs::u8 speed_pin;
+        /// IArduino Motor Sheid: Пин скорости (Enable)
+        /// L293N Module: IN2 / IN4
+        rs::u8 pin_b;
 
         /// Канал (0 .. 15)
         rs::u8 ledc_channel;
@@ -87,19 +91,30 @@ public:
         kf_Logger_info("begin");
 
         if (not driver_settings.isValid() or not pwm_settings.isValid()) { return false; }
-
-        pinMode(driver_settings.direction_pin, OUTPUT);
-        pinMode(driver_settings.speed_pin, OUTPUT);
-
-        const auto current_frequency = ledcSetup(
-            driver_settings.ledc_channel,
-            pwm_settings.ledc_frequency_hz,
-            pwm_settings.ledc_resolution_bits);
-        if (current_frequency == 0) { return false; }
-        ledcAttachPin(driver_settings.speed_pin, driver_settings.ledc_channel);
-        stop();
-
         max_pwm = pwm_settings.maxPwm();
+
+        pinMode(driver_settings.pin_a, OUTPUT);
+        pinMode(driver_settings.pin_b, OUTPUT);
+
+        if constexpr (config::selected_motor_driver == config::MotorDriver::IArduino) {
+
+            const auto current_frequency = ledcSetup(
+                driver_settings.ledc_channel,
+                pwm_settings.ledc_frequency_hz,
+                pwm_settings.ledc_resolution_bits);
+            if (current_frequency == 0) { return false; }
+            ledcAttachPin(driver_settings.pin_b, driver_settings.ledc_channel);
+
+        } else if constexpr (config::selected_motor_driver == config::MotorDriver::L293nModule) {
+
+            analogWriteFrequency(pwm_settings.ledc_frequency_hz);
+            analogWriteResolution(pwm_settings.ledc_resolution_bits);
+
+        } else {
+#pragma error
+        }
+
+        stop();
 
         kf_Logger_debug("end");
         return true;
@@ -115,8 +130,27 @@ public:
     /// @param pwm Значение - ШИМ, Знак - направление
     void write(SignedPwm pwm) const {
         pwm = constrain(pwm, -max_pwm, max_pwm);
-        digitalWrite(driver_settings.direction_pin, matchDirection(pwm));
-        ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
+
+        if constexpr (config::selected_motor_driver == config::MotorDriver::IArduino) {
+
+            digitalWrite(driver_settings.pin_a, matchDirection(pwm));
+            ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
+
+        } else if constexpr (config::selected_motor_driver == config::MotorDriver::L293nModule) {
+
+            const bool positive_direction = matchDirection(pwm);
+            pwm = std::abs(pwm);
+            if (positive_direction) {
+                analogWrite(driver_settings.pin_a, pwm);
+                analogWrite(driver_settings.pin_b, 0);
+            } else {
+                analogWrite(driver_settings.pin_a, 0);
+                analogWrite(driver_settings.pin_b, pwm);
+            }
+
+        } else {
+#pragma error
+        }
     }
 
 private:
