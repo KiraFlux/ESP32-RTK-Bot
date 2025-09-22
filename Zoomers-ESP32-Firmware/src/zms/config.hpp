@@ -9,6 +9,7 @@ enum class MotorDriver {
     L293nModule,
 };
 
-constexpr auto selected_motor_driver = MotorDriver::IArduino;
+//constexpr auto selected_motor_driver = MotorDriver::IArduino;
+constexpr auto selected_motor_driver = MotorDriver::L293nModule;
 
 }// namespace zms::config
