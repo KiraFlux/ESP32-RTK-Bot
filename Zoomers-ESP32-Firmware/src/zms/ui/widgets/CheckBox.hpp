@@ -12,25 +12,25 @@ struct CheckBox final : kf::Widget {
 
 private:
     Handler on_change;
-    bool state{false};
+    bool state;
 
 public:
-    explicit CheckBox(Handler change_handler) :
-        on_change{std::move(change_handler)} {}
+    explicit CheckBox(Handler change_handler, bool default_state = false) :
+        on_change{std::move(change_handler)}, state{default_state} {}
 
     bool onEvent(kf::Event event) override {
         if (event == kf::Event::Click) {
-            state = not state;
+            setState(not state);
             return true;
         }
 
         if (event == kf::Event::ChangeDecrement) {
-            state = false;
+            setState(false);
             return true;
         }
 
         if (event == kf::Event::ChangeIncrement) {
-            state = true;
+            setState(true);
             return true;
         }
 
@@ -42,8 +42,11 @@ public:
     }
 
 private:
-    rs::str getLabel() const {
-        return state ? "==[X]" : "[ ]--";
+    inline rs::str getLabel() const { return state ? "[1]==" : "--[0]"; }
+
+    void setState(bool new_state) {
+        state = new_state;
+        if (on_change) { on_change(state); }
     }
 };
 

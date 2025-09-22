@@ -61,6 +61,7 @@ struct Encoder {
 
     /// Разрешить (Подключить) обработку прерываний с основной фазы
     void enable() {
+        kf_Logger_debug("ok");
         attachInterruptArg(
             pins.phase_a,
             encoderInterruptHandler,
@@ -70,6 +71,7 @@ struct Encoder {
 
     /// Отключить обработку прерываний
     void disable() const {
+        kf_Logger_debug("ok");
         detachInterrupt(pins.phase_a);
     }
 
