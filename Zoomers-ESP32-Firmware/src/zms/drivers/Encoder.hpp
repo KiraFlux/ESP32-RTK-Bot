@@ -21,10 +21,10 @@ struct Encoder {
         rs::f32 ticks_in_one_mm;
 
         /// Перевести из отсчётов в мм
-        Millimeters toMillimeters(Ticks ticks) const { return Millimeters(ticks) / ticks_in_one_mm; }
+        [[nodiscard]] Millimeters toMillimeters(Ticks ticks) const { return Millimeters(ticks) / ticks_in_one_mm; }
 
         /// Перевести из мм в отсчёты
-        Ticks toTicks(Millimeters mm) const { return Ticks(mm * ticks_in_one_mm); }
+        [[nodiscard]] Ticks toTicks(Millimeters mm) const { return Ticks(mm * ticks_in_one_mm); }
     };
 
     /// Настройки пинов
@@ -74,13 +74,13 @@ struct Encoder {
     }
 
     /// Положение энкодера в отчётах
-    inline Ticks getPositionTicks() const { return position; }
+    [[nodiscard]] inline Ticks getPositionTicks() const { return position; }
 
     /// Установить положение энкодера в отсчётах
     void setPositionTicks(Ticks new_position) { position = new_position; }
 
     /// Положение энкодера в мм
-    inline Millimeters getPositionMillimeters() const { return conversion.toMillimeters(position); }
+    [[nodiscard]] inline Millimeters getPositionMillimeters() const { return conversion.toMillimeters(position); }
 
     /// Установить положение энкодера в мм
     void setPositionMillimeters(Millimeters new_position) { position = conversion.toTicks(new_position); }
