@@ -3,7 +3,6 @@
 #include <kf/Text-UI.hpp>
 
 #include "zms/drivers/Motor.hpp"
-#include "zms/ui/widgets/ComboBox.hpp"
 
 namespace zms {
 
@@ -11,7 +10,7 @@ namespace zms {
 struct MotorDriverSettingsPage final : kf::Page {
 
     /// Направление движения
-    ComboBox<Motor::Direction, 2> direction;
+    kf::ComboBox<Motor::Direction, 2> direction;
 
     MotorDriverSettingsPage(const char *motor_name, Motor::DriverSettings &settings) :
         Page{motor_name},

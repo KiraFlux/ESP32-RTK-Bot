@@ -6,13 +6,12 @@
 #include "zms/drivers/Encoder.hpp"
 #include "zms/ui/pages/MainPage.hpp"
 #include "zms/ui/widgets/CheckBox.hpp"
-#include "zms/ui/widgets/Display.hpp"
 
 namespace zms {
 
 struct EncoderTunePage final : kf::Page {
 
-    using TicksDisplay = kf::Labeled<Display<Encoder::Ticks>>;
+    using TicksDisplay = kf::Labeled<kf::Display<Encoder::Ticks>>;
 
     TicksDisplay ticks_display;
     kf::Labeled<CheckBox> enabled;
