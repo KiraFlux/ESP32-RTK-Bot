@@ -20,7 +20,7 @@ public:
         period{period} {}
 
     /// Прошел ли период
-    bool alarmed() {
+    bool ready() {
         const auto now = millis();
         const auto delta = now - last;
 
