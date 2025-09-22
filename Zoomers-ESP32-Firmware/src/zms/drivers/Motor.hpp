@@ -25,6 +25,7 @@ struct Motor {
     /// Настройки драйвера
     struct DriverSettings {
 
+        /// Определение положительного направления вращения
         Direction direction;
 
         /// IArduino Motor Sheid: Пин направления (H-bridge)
