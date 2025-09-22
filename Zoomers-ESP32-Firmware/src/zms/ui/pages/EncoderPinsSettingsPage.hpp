@@ -1,6 +1,6 @@
 #pragma once
 
-#include <kf/Text-UI.hpp>
+#include <kf/tui.hpp>
 
 #include "zms/drivers/Encoder.hpp"
 

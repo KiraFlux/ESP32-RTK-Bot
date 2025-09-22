@@ -1,7 +1,6 @@
 #pragma once
 
-#include <kf/Text-UI.hpp>
-
+#include <kf/tui.hpp>
 
 namespace zms {
 // fixme
