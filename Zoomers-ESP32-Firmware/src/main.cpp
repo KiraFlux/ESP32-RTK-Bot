@@ -114,8 +114,8 @@ void setup() {
 void loop() {
     static auto &page_manager = kf::PageManager::instance();
     
-    const bool update_requied = page_manager.pollEvents();
-    if (update_requied) { sendTUI(page_manager); }
+    const bool update_required = page_manager.pollEvents();
+    if (update_required) { sendTUI(page_manager); }
 
     pollRemoteControl();
 

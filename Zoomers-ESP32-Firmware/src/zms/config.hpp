@@ -1,9 +1,7 @@
 #pragma once
 
-namespace zms {
-
 /// Глобальная конфигурация ZMS
-namespace config {
+namespace zms::config {
 
 /// Тип драйвера мотора
 enum class MotorDriver {
@@ -13,5 +11,4 @@ enum class MotorDriver {
 
 constexpr auto selected_motor_driver = MotorDriver::IArduino;
 
-}// namespace config
-}// namespace zms
+}// namespace zms::config
