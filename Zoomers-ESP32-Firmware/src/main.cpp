@@ -4,6 +4,7 @@
 
 #include "zms/Robot.hpp"
 #include "zms/remote/RemoteController.hpp"
+#include "zms/tools/Timer.hpp"
 #include "zms/ui/pages/EncoderTunePage.hpp"
 #include "zms/ui/pages/MainPage.hpp"
 #include "zms/ui/pages/MotorTunePage.hpp"
@@ -113,7 +114,14 @@ void setup() {
 
 void loop() {
     static auto &page_manager = kf::PageManager::instance();
-    
+    static auto &robot = zms::Robot::instance();
+
+    static zms::Timer timer{100};
+
+    if (timer.ready()) {
+        kf_Logger_debug("L: %d\tR: %d", robot.left_encoder.position, robot.right_encoder.position);
+    }
+
     const bool update_required = page_manager.pollEvents();
     if (update_required) { sendTUI(page_manager); }
 
