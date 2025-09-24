@@ -8,13 +8,13 @@
 namespace zms {
 
 /// Страница настроек узла Espnow
-struct EspnowNodeSettingsPage final : kf::Page {
+struct EspnowNodeSettingsPage final : kf::tui::Page {
 
     HexDisplay display;
 
     explicit EspnowNodeSettingsPage(EspnowNode::Settings &settings) :
-        Page{"Espnow Node"},
-        display{kf::TextStream::Slice{
+        kf::tui::Page{"Espnow Node"},
+        display{kf::tui::TextStream::Slice{
             .data = reinterpret_cast<const char *>(settings.remote_controller_mac.data()),
             .len = settings.remote_controller_mac.size()}} {
         add(display);

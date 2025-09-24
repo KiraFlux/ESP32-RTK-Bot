@@ -13,14 +13,14 @@
 namespace zms {
 
 /// Страница настроек робота
-struct RobotSettingsPage final : kf::Page {
+struct RobotSettingsPage final : kf::tui::Page {
 
 private:
     /// Сохранить настройки
-    kf::Button save;
+    kf::tui::Button save;
 
     /// Загрузить настройки
-    kf::Button load;
+    kf::tui::Button load;
 
 public:
     MotorDriverSettingsPage left_motor_driver, right_motor_driver;
@@ -33,8 +33,8 @@ public:
 
     explicit RobotSettingsPage(kf::Storage<Robot::Settings> &storage) :
         Page{storage.key},
-        save{"Save", [&storage](kf::Button &) { storage.save(); }},
-        load{"Load", [&storage](kf::Button &) { storage.load(); }},
+        save{"Save", [&storage](kf::tui::Button &) { storage.save(); }},
+        load{"Load", [&storage](kf::tui::Button &) { storage.load(); }},
 
         left_motor_driver{"Motor Driver L", storage.settings.left_motor},
         right_motor_driver{"Motor Driver R", storage.settings.right_motor},

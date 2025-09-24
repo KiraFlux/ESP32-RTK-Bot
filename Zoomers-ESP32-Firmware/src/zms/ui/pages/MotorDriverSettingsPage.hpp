@@ -7,10 +7,10 @@
 namespace zms {
 
 /// Страница настроек драйверов моторов
-struct MotorDriverSettingsPage final : kf::Page {
+struct MotorDriverSettingsPage final : kf::tui::Page {
 
     /// Направление движения
-    kf::ComboBox<Motor::Direction, 2> direction;
+    kf::tui::ComboBox<Motor::Direction, 2> direction;
 
     MotorDriverSettingsPage(const char *motor_name, Motor::DriverSettings &settings) :
         Page{motor_name},

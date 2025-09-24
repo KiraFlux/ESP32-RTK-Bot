@@ -4,8 +4,8 @@
 
 namespace zms {
 // fixme
-template<typename T> struct SpinBoxAdapter final : kf::Widget {
-    using Input = kf::SpinBox<T>;
+template<typename T> struct SpinBoxAdapter final : kf::tui::Widget {
+    using Input = kf::tui::SpinBox<T>;
     using Mode = typename Input::Mode;
     using Scalar = typename Input::Scalar;
 
@@ -31,8 +31,8 @@ public:
         value_input(value_param, this->step, value_input_mode_param),
         step_input(this->step, this->step_step, step_input_mode_param) {}
 
-    bool onEvent(kf::Event event) override {
-        if (event == kf::Event::Click) {
+    bool onEvent(kf::tui::Event event) override {
+        if (event == kf::tui::Event::Click) {
             value_input_mode ^= 1;
             return true;
         }
@@ -44,7 +44,7 @@ public:
         }
     }
 
-    void doRender(kf::TextStream &stream) const override {
+    void doRender(kf::tui::TextStream &stream) const override {
         if (value_input_mode) {
             value_input.doRender(stream);
         } else {

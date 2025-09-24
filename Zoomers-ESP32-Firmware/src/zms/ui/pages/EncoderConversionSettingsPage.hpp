@@ -7,11 +7,11 @@
 namespace zms {
 
 /// Страница настроек энкодера
-struct EncoderConversionSettingsPage final : kf::Page {
+struct EncoderConversionSettingsPage final : kf::tui::Page {
 
 
     explicit EncoderConversionSettingsPage(Encoder::ConversionSettings &settings) :
-        Page{"Enc Conversion"} {}
+        kf::tui::Page{"Enc Conversion"} {}
 };
 
 }// namespace zms

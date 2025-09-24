@@ -7,17 +7,16 @@
 #include "zms/ui/pages/MainPage.hpp"
 #include "zms/ui/widgets/EventObserver.hpp"
 
-
 namespace zms {
 
 /// Страница настройки моторов
-struct MotorTunePage final : kf::Page {
-    kf::Button set_current_pwm_as_dead_zone;
-    kf::Button re_init;
+struct MotorTunePage final : kf::tui::Page {
+    kf::tui::Button set_current_pwm_as_dead_zone;
+    kf::tui::Button re_init;
 
-    using PwmInput = EventObserver<kf::Labeled<kf::SpinBox<Motor::SignedPwm>>>;
+    using PwmInput = EventObserver<kf::tui::Labeled<kf::tui::SpinBox<Motor::SignedPwm>>>;
     using PwmDuty = PwmInput::Observable::Content::Scalar;
-    using PwmStepInput = kf::Labeled<kf::SpinBox<PwmDuty>>;
+    using PwmStepInput = kf::tui::Labeled<kf::tui::SpinBox<PwmDuty>>;
 
     PwmInput pwm_input;
     PwmStepInput pwm_step_input;
@@ -25,9 +24,9 @@ struct MotorTunePage final : kf::Page {
     PwmDuty current_pwm{0};
     const PwmDuty pwm_step_step{2};
 
-    using NormalizedInput = EventObserver<kf::Labeled<kf::SpinBox<rs::f32>>>;
+    using NormalizedInput = EventObserver<kf::tui::Labeled<kf::tui::SpinBox<rs::f32>>>;
     using NormalizedValue = NormalizedInput::Observable::Content::Scalar;
-    using NormalizedValueStepInput = kf::Labeled<kf::SpinBox<NormalizedValue>>;
+    using NormalizedValueStepInput = kf::tui::Labeled<kf::tui::SpinBox<NormalizedValue>>;
 
     NormalizedInput normalized_input;
     NormalizedValueStepInput normalized_value_step_input;
@@ -35,7 +34,7 @@ struct MotorTunePage final : kf::Page {
     NormalizedValue current_normalized_value{0.0f};
     const NormalizedValue normalized_value_step_step{0.1f};
 
-    using FrequencyInput = kf::Labeled<kf::SpinBox<Motor::PwmSettings::FrequencyScalar>>;
+    using FrequencyInput = kf::tui::Labeled<kf::tui::SpinBox<Motor::PwmSettings::FrequencyScalar>>;
     FrequencyInput frequency_input;
     const Motor::PwmSettings::FrequencyScalar frequency_step{2500};
 
@@ -44,13 +43,13 @@ struct MotorTunePage final : kf::Page {
         pwm_step{static_cast<PwmDuty>(1u << (motor.pwm_settings.ledc_resolution_bits - 2))},
         set_current_pwm_as_dead_zone{
             "Set DeadZone",
-            [this, &storage](kf::Button &) {
+            [this, &storage](kf::tui::Button &) {
                 storage.settings.motor_pwm.dead_zone = current_pwm;
             }
         },
         re_init{
             "Re-Init",
-            [&motor](kf::Button &) {
+            [&motor](kf::tui::Button &) {
                 motor.init();
             }
         },
@@ -62,7 +61,7 @@ struct MotorTunePage final : kf::Page {
                     pwm_step
                 }
             },
-            [this, &motor](kf::Event) {
+            [this, &motor](kf::tui::Event) {
                 motor.write(current_pwm);
             }
         },
@@ -82,7 +81,7 @@ struct MotorTunePage final : kf::Page {
                     normalized_value_step
                 }
             },
-            [this, &motor](kf::Event) {
+            [this, &motor](kf::tui::Event) {
                 motor.set(current_normalized_value);
             }
         },

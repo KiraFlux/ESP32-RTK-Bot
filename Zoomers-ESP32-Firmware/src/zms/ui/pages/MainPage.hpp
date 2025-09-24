@@ -7,11 +7,11 @@
 namespace zms {
 
 /// Основная страница
-struct MainPage final : kf::Page, Singleton<MainPage> {
+struct MainPage final : kf::tui::Page, Singleton<MainPage> {
     friend struct Singleton<MainPage>;
 
     explicit MainPage() :
-        Page{"Main"} {}
+        kf::tui::Page{"Main"} {}
 };
 
 }// namespace zms

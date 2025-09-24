@@ -5,20 +5,20 @@
 
 namespace zms {
 
-struct HexDisplay final : kf::Widget {
+struct HexDisplay final : kf::tui::Widget {
 
 private:
-    kf::TextStream::Slice view;
+    kf::tui::TextStream::Slice view;
 
 public:
-    explicit HexDisplay(kf::TextStream::Slice v) :
+    explicit HexDisplay(kf::tui::TextStream::Slice v) :
         view{std::move(v)} {}
 
-    bool onEvent(kf::Event event) override {
+    bool onEvent(kf::tui::Event event) override {
         return false;
     }
 
-    void doRender(kf::TextStream &stream) const override {
+    void doRender(kf::tui::TextStream &stream) const override {
         for (rs::size i = 0; i < view.len; i += 1) {
             const rs::u8 b = *(view.data + i);
             stream.print(b, HEX);
