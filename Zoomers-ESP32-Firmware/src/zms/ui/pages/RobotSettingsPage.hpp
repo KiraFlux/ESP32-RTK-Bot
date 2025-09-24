@@ -7,7 +7,6 @@
 #include "zms/ui/pages/EncoderPinsSettingsPage.hpp"
 #include "zms/ui/pages/EspnowNodeSettingsPage.hpp"
 #include "zms/ui/pages/MainPage.hpp"
-#include "zms/ui/pages/MotorDriverSettingsPage.hpp"
 #include "zms/ui/pages/MotorPwmSettingsPage.hpp"
 
 namespace zms {
@@ -23,7 +22,6 @@ private:
     kf::tui::Button load;
 
 public:
-    MotorDriverSettingsPage left_motor_driver, right_motor_driver;
     MotorPwmSettingsPage motor_pwm;
 
     EncoderConversionSettingsPage encoder_conversion;
@@ -36,8 +34,6 @@ public:
         save{"Save", [&storage](kf::tui::Button &) { storage.save(); }},
         load{"Load", [&storage](kf::tui::Button &) { storage.load(); }},
 
-        left_motor_driver{"Motor Driver L", storage.settings.left_motor},
-        right_motor_driver{"Motor Driver R", storage.settings.right_motor},
         motor_pwm{storage.settings.motor_pwm},
 
         left_encoder_pins{"Encoder Pins L", storage.settings.left_encoder},
@@ -50,8 +46,6 @@ public:
         add(save);
         add(load);
 
-        link(left_motor_driver);
-        link(right_motor_driver);
         link(motor_pwm);
 
         link(left_encoder_pins);

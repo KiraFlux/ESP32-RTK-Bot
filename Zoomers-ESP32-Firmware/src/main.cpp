@@ -66,8 +66,8 @@ static void sendTUI(kf::tui::PageManager &page_manager) {
 static void setupTUI(kf::tui::PageManager &page_manager) {
     auto &robot = zms::Robot::instance();
     static zms::RobotSettingsPage robot_settings_page{robot.storage};
-    static zms::MotorTunePage left_motor_tune_page{"Tune-MotorLeft", robot.left_motor, robot.storage};
-    static zms::MotorTunePage right_motor_tune_page{"Tune-MotorRight", robot.right_motor, robot.storage};
+    static zms::MotorTunePage left_motor_tune_page{"Tune-MotorLeft", robot.left_motor, robot.storage.settings.motor_pwm, robot.storage.settings.left_motor};
+    static zms::MotorTunePage right_motor_tune_page{"Tune-MotorRight", robot.right_motor, robot.storage.settings.motor_pwm, robot.storage.settings.right_motor};
     static zms::EncoderTunePage left_encoder_tune_page{"Tune-EncoderLeft", robot.left_encoder};
     static zms::EncoderTunePage right_encoder_tune_page{"Tune-EncoderRight", robot.right_encoder};
 

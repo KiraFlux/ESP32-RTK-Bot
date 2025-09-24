@@ -38,69 +38,72 @@ struct MotorTunePage final : kf::tui::Page {
     FrequencyInput frequency_input;
     const Motor::PwmSettings::FrequencyScalar frequency_step{2500};
 
-    explicit MotorTunePage(const char *title, Motor &motor, kf::Storage<Robot::Settings> &storage) :
-        Page{title},
+    /// Направление движения
+    kf::tui::ComboBox<Motor::Direction, 2> direction;
+
+    explicit MotorTunePage(
+        const char *motor_name,
+        Motor &motor,
+        Motor::PwmSettings &pwm_settings,
+        Motor::DriverSettings &driver_settings
+
+        ) :
+        Page{motor_name},
         pwm_step{static_cast<PwmDuty>(1u << (motor.pwm_settings.ledc_resolution_bits - 2))},
         set_current_pwm_as_dead_zone{
             "Set DeadZone",
-            [this, &storage](kf::tui::Button &) {
-                storage.settings.motor_pwm.dead_zone = current_pwm;
-            }
-        },
+            [this, &pwm_settings](kf::tui::Button &) {
+                pwm_settings.dead_zone = current_pwm;
+            }},
         re_init{
             "Re-Init",
             [&motor](kf::tui::Button &) {
                 motor.init();
-            }
-        },
+            }},
         pwm_input{
             PwmInput::Observable{
                 "PWM",
                 PwmInput::Observable::Content{
                     current_pwm,
-                    pwm_step
-                }
-            },
+                    pwm_step}},
             [this, &motor](kf::tui::Event) {
                 motor.write(current_pwm);
-            }
-        },
+            }},
         pwm_step_input{
             "Step",
             PwmStepInput::Content{
                 pwm_step,
                 pwm_step_step,
-                PwmStepInput::Content::Mode::Geometric
-            }
-        },
+                PwmStepInput::Content::Mode::Geometric}},
         normalized_input{
             NormalizedInput::Observable{
                 "Norm",
                 NormalizedInput::Observable::Content{
                     current_normalized_value,
-                    normalized_value_step
-                }
-            },
+                    normalized_value_step}},
             [this, &motor](kf::tui::Event) {
                 motor.set(current_normalized_value);
-            }
-        },
+            }},
         normalized_value_step_input{
             "Step",
             NormalizedValueStepInput::Content{
                 normalized_value_step,
                 normalized_value_step_step,
-                NormalizedValueStepInput::Content::Mode::Geometric
-            }
-        },
+                NormalizedValueStepInput::Content::Mode::Geometric}},
         frequency_input{
             "Hz",
             FrequencyInput::Content{
-                storage.settings.motor_pwm.ledc_frequency_hz,
+                pwm_settings.ledc_frequency_hz,
                 frequency_step,
-                FrequencyInput::Content::Mode::ArithmeticPositiveOnly
-            }
-        } {
+                FrequencyInput::Content::Mode::ArithmeticPositiveOnly}},
+        direction{
+            {{
+                {"CW", Motor::Direction::CW},
+                {"CCW", Motor::Direction::CCW},
+            }},
+            driver_settings.direction}
+
+    {
         MainPage::instance().link(*this);
         add(pwm_input);
         add(pwm_step_input);
@@ -109,6 +112,7 @@ struct MotorTunePage final : kf::tui::Page {
         add(normalized_value_step_input);
         add(frequency_input);
         add(re_init);
+        add(direction);
     }
 };
 
