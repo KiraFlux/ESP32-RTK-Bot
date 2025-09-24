@@ -5,10 +5,13 @@
 #include "zms/Robot.hpp"
 #include "zms/remote/RemoteController.hpp"
 #include "zms/tools/Timer.hpp"
+#include "zms/ui/pages/EncoderConversionSettingsPage.hpp"
 #include "zms/ui/pages/EncoderTunePage.hpp"
+#include "zms/ui/pages/EspnowNodeSettingsPage.hpp"
 #include "zms/ui/pages/MainPage.hpp"
+#include "zms/ui/pages/MotorPwmSettingsPage.hpp"
 #include "zms/ui/pages/MotorTunePage.hpp"
-#include "zms/ui/pages/RobotSettingsPage.hpp"
+#include "zms/ui/pages/StoragePage.hpp"
 
 static void onEspnowRemoteControllerPacket(const void *data, rs::u8 size) {
 
@@ -65,11 +68,46 @@ static void sendTUI(kf::tui::PageManager &page_manager) {
 
 static void setupTUI(kf::tui::PageManager &page_manager) {
     auto &robot = zms::Robot::instance();
-    static zms::RobotSettingsPage robot_settings_page{robot.storage};
-    static zms::MotorTunePage left_motor_tune_page{"Tune-MotorLeft", robot.left_motor, robot.storage.settings.motor_pwm, robot.storage.settings.left_motor};
-    static zms::MotorTunePage right_motor_tune_page{"Tune-MotorRight", robot.right_motor, robot.storage.settings.motor_pwm, robot.storage.settings.right_motor};
-    static zms::EncoderTunePage left_encoder_tune_page{"Tune-EncoderLeft", robot.left_encoder};
-    static zms::EncoderTunePage right_encoder_tune_page{"Tune-EncoderRight", robot.right_encoder};
+    auto &settings = robot.storage.settings;
+
+    static zms::StoragePage robot_settings_page{robot.storage};
+
+    // Моторы
+
+    static zms::MotorTunePage left_motor_tune_page{
+        "Motor L",
+        robot.left_motor,
+        settings.motor_pwm,
+        settings.left_motor};
+
+    static zms::MotorTunePage right_motor_tune_page{
+        "Motor R",
+        robot.right_motor,
+        settings.motor_pwm,
+        settings.right_motor};
+
+    static zms::MotorPwmSettingsPage motor_pwm_settings_page{
+        settings.motor_pwm};
+
+    // Энкодеры
+
+    static zms::EncoderTunePage left_encoder_tune_page{
+        "Encoder L",
+        robot.left_encoder,
+        settings.left_encoder};
+
+    static zms::EncoderTunePage right_encoder_tune_page{
+        "Encoder R",
+        robot.right_encoder,
+        settings.left_encoder};
+
+    static zms::EncoderConversionSettingsPage encoder_conversion_settings_page{
+        settings.encoder_conversion};
+
+    //
+
+    static zms::EspnowNodeSettingsPage espnow_node_settings_page{
+        settings.espnow_node};
 
     page_manager.bind(zms::MainPage::instance());
 }

@@ -104,15 +104,18 @@ struct MotorTunePage final : kf::tui::Page {
             driver_settings.direction}
 
     {
-        MainPage::instance().link(*this);
+        link(MainPage::instance());
+
         add(pwm_input);
         add(pwm_step_input);
         add(set_current_pwm_as_dead_zone);
+
         add(normalized_input);
         add(normalized_value_step_input);
         add(frequency_input);
-        add(re_init);
         add(direction);
+
+        add(re_init);
     }
 };
 

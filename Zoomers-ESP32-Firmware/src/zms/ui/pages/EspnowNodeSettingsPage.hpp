@@ -17,6 +17,7 @@ struct EspnowNodeSettingsPage final : kf::tui::Page {
         display{kf::tui::TextStream::Slice{
             .data = reinterpret_cast<const char *>(settings.remote_controller_mac.data()),
             .len = settings.remote_controller_mac.size()}} {
+        link(MainPage::instance());
         add(display);
     }
 };
