@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <kf/Logger.hpp>
 
+#include <bytelang/bridge.hpp>
+
 #include "zms/Robot.hpp"
 
 void setup() {
