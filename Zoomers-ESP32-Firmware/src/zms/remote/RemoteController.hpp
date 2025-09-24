@@ -3,7 +3,6 @@
 #include "zms/tools/Singleton.hpp"
 #include "zms/tools/TimeoutManager.hpp"
 
-
 namespace zms {
 
 /// Работает с пакетами данных с пульта
@@ -36,7 +35,7 @@ public:
     }
 
     /// Просрочен ли пакет
-    inline bool isPacketTimeoutExpired() const { return packet_timeout_manager.expired(); }
+    [[nodiscard]] inline bool isPacketTimeoutExpired() const { return packet_timeout_manager.expired(); }
 
     /// Сбросить значение пакета управления
     void resetControlPacket() {

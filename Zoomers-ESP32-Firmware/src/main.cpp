@@ -56,7 +56,7 @@ static void sendTUI(kf::PageManager &page_manager) {
         slice.data,
         std::min(slice.len, static_cast<rs::size>(ESP_NOW_MAX_DATA_LEN)));
 
-    kf_Logger_error("Send: %d bytes", slice.len);
+    kf_Logger_debug("Send: %d bytes", slice.len);
 
     if (result.fail()) { kf_Logger_error(rs::toString(result.error)); }
 }
@@ -114,7 +114,6 @@ void setup() {
 
 void loop() {
     static auto &page_manager = kf::PageManager::instance();
-    static auto &robot = zms::Robot::instance();
 
     const bool update_required = page_manager.pollEvents();
     if (update_required) { sendTUI(page_manager); }

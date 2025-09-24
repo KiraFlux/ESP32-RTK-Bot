@@ -33,7 +33,7 @@ public:
 
     /// Инициализировать протокол
     /// @returns <code>true</code> - Успешная инициализация
-    bool init() const {
+    [[nodiscard]] bool init() const {
         kf_Logger_info("init");
 
         const bool wifi_ok = WiFiClass::mode(WIFI_MODE_STA);

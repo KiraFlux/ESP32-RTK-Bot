@@ -28,11 +28,11 @@ struct Motor {
         /// Определение положительного направления вращения
         Direction direction;
 
-        /// IArduino Motor Sheid: Пин направления (H-bridge)
+        /// IArduino Motor Shield: Пин направления (H-bridge)
         /// L293N Module: IN1 / IN3
         rs::u8 pin_a;
 
-        /// IArduino Motor Sheid: Пин скорости (Enable)
+        /// IArduino Motor Shield: Пин скорости (Enable)
         /// L293N Module: IN2 / IN4
         rs::u8 pin_b;
 
@@ -41,7 +41,7 @@ struct Motor {
 
         /// Проверяет корректность настроек
         /// @return <code>true</code> - Заданные параметры в норме
-        bool isValid() const {
+        [[nodiscard]] bool isValid() const {
             if (ledc_channel > 15) {
                 kf_Logger_error("Invalid");
                 return false;
@@ -61,7 +61,7 @@ struct Motor {
         /// Мёртвая зона ШИМ
         SignedPwm dead_zone;
 
-        bool isValid() const {
+        [[nodiscard]] bool isValid() const {
             if (dead_zone < 0 or ledc_resolution_bits < 8 or ledc_resolution_bits > 12) {
                 kf_Logger_error("Invalid");
                 return false;
@@ -70,7 +70,7 @@ struct Motor {
         }
 
         /// Рассчитать актуальное максимальное значение ШИМ
-        inline SignedPwm maxPwm() const { return static_cast<SignedPwm>((1u << ledc_resolution_bits) - 1u); }
+        [[nodiscard]] inline SignedPwm maxPwm() const { return static_cast<SignedPwm>((1u << ledc_resolution_bits) - 1u); }
     };
 
     /// Настройки драйвера
@@ -112,7 +112,7 @@ public:
             analogWriteResolution(pwm_settings.ledc_resolution_bits);
 
         } else {
-#pragma error
+
         }
 
         stop();
@@ -140,27 +140,25 @@ public:
         } else if constexpr (config::selected_motor_driver == config::MotorDriver::L293nModule) {
 
             const bool positive_direction = matchDirection(pwm);
-            pwm = std::abs(pwm);
             if (positive_direction) {
-                analogWrite(driver_settings.pin_a, pwm);
+                analogWrite(driver_settings.pin_a, std::abs(pwm));
                 analogWrite(driver_settings.pin_b, 0);
             } else {
                 analogWrite(driver_settings.pin_a, 0);
-                analogWrite(driver_settings.pin_b, pwm);
+                analogWrite(driver_settings.pin_b, std::abs(pwm));
             }
 
         } else {
-#pragma error
         }
     }
 
 private:
-    inline bool matchDirection(SignedPwm pwm) const {
+    [[nodiscard]] inline bool matchDirection(SignedPwm pwm) const {
         const bool positive = pwm > 0;
         return driver_settings.direction == Direction::CW == positive;
     }
 
-    SignedPwm fromNormalized(float value) const {
+    [[nodiscard]] SignedPwm fromNormalized(float value) const {
         if (std::isnan(value)) { return 0; }
 
         const auto abs_value = std::abs(constrain(value, -1.0f, +1.0f));

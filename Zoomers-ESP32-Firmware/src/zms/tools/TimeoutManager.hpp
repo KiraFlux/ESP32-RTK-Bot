@@ -26,7 +26,7 @@ public:
 
     /// Проверка истечения таймаута
     /// @returns <code>true</code> если таймаут просрочен
-    inline bool expired() const { return millis() >= next_timeout; }
+    [[nodiscard]] inline bool expired() const { return millis() >= next_timeout; }
 };
 
 }// namespace zms
