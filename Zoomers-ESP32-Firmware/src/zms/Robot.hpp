@@ -6,7 +6,7 @@
 
 #include "zms/drivers/Encoder.hpp"
 #include "zms/drivers/Motor.hpp"
-#include "zms/remote/Espnow.hpp"
+#include "zms/remote/EspnowNode.hpp"
 #include "zms/remote/EspnowRemoteController.hpp"
 #include "zms/ui/pages/EncoderConversionSettingsPage.hpp"
 #include "zms/ui/pages/EncoderTunePage.hpp"

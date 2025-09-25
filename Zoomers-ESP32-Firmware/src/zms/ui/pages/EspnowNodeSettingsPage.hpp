@@ -2,7 +2,7 @@
 
 #include <kf/tui.hpp>
 
-#include "zms/remote/Espnow.hpp"
+#include "zms/remote/EspnowNode.hpp"
 #include "zms/ui/widgets/HexDisplay.hpp"
 
 namespace zms {
