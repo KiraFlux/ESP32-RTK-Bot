@@ -6,6 +6,7 @@
 
 #include "zms/drivers/Encoder.hpp"
 #include "zms/drivers/Motor.hpp"
+#include "zms/remote/ByteLangBridgeProtocol.hpp"
 #include "zms/remote/EspnowNode.hpp"
 #include "zms/remote/EspnowRemoteController.hpp"
 #include "zms/ui/pages/EncoderConversionSettingsPage.hpp"
@@ -83,6 +84,8 @@ struct Robot : Singleton<Robot> {
                 .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},
             }}};
 
+    // Аппаратные компоненты
+
     /// Левый мотор
     Motor left_motor{storage.settings.left_motor, storage.settings.motor_pwm};
 
@@ -95,11 +98,18 @@ struct Robot : Singleton<Robot> {
     /// Правый Энкодер
     Encoder right_encoder{storage.settings.right_encoder, storage.settings.encoder_conversion};
 
+    //
+
     /// Узел протокола Espnow
     EspnowNode espnow_node{storage.settings.espnow_node};
 
     /// Удаленный контроллер
     EspnowRemoteController espnow_remote_controller{};
+
+    //
+
+    /// ByteLang UART Мост
+    ByteLangBridgeProtocol bridge{Serial};
 
     /// Инициализировать всю периферию
     bool init() {
@@ -135,6 +145,7 @@ struct Robot : Singleton<Robot> {
     void poll() {
         pollTUI();
         pollRemoteControl();
+        pollByteLangBridge();
     }
 
 private:
@@ -155,6 +166,14 @@ private:
             espnow_remote_controller.calc(left_power, right_power);
             left_motor.set(left_power);
             right_motor.set(right_power);
+        }
+    }
+
+    void pollByteLangBridge() {
+        const auto result = bridge.receiver.poll();
+
+        if (result.fail()) {
+            kf_Logger_error("BL bridge error: %d", static_cast<int>(result.error));
         }
     }
 
