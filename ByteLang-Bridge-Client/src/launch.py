@@ -36,23 +36,20 @@ class Robot(Protocol):
         print("Senders: \n" + "\n".join(map(str, self.getSenders())))
         print("Receivers: \n" + "\n".join(map(str, self.getReceivers())))
 
-        Thread(target=self._poll, daemon=True).start()
+        self.poll_task = Thread(target=self._poll, daemon=True)
+        self.poll_task.start()
 
     def _poll(self) -> None:
         while True:
             try:
-                ports = self._get_serial_port()
-
-                print(f"Подключение к {ports}")
-                self._serial.reconnect(ports)
-
                 while True:
-                    sleep(0.001)
                     self.poll()
+                    sleep(0.001)
 
             except SerialException as e:
-                print(f"Ошибка соединения: {e}. Переподключение...")
-                sleep(1)
+                ports = self._get_serial_port()
+                print(f"Ошибка соединения: {e}. Подключение к {ports}")
+                self._serial.reconnect(ports)
 
             except KeyboardInterrupt:
                 print("Завершение работы")
@@ -61,13 +58,18 @@ class Robot(Protocol):
     @staticmethod
     def _get_serial_port() -> str:
         while True:
-            ports = SerialStream.getPorts()
+            ports = tuple(
+                p
+                for p in SerialStream.getPorts()
+                if "USB" in p
+            )
 
             if ports:
-                print("Порты не обнаружены. Ожидание...")
+                print(f"Обнаружен порты {ports}")
                 return ports[0]
 
             sleep(2)
+            print("Не найдены порты:")
 
     @staticmethod
     def _on_millis(ms: int) -> None:
@@ -105,11 +107,14 @@ class Robot(Protocol):
 
 def _launch():
     robot = Robot()
+    sleep(2)
 
-    robot.go_dist(1000)
-    robot.go_dist(-1000)
-    robot.turn(1.0)
-    robot.turn(-1.0)
+    while True:
+        robot.send_millis_request(None)
+        robot.go_dist(1000)
+        sleep(1)
+
+    robot.poll_task.join()
 
 
 _launch()
