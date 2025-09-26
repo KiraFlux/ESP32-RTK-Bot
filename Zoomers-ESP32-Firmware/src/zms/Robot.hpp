@@ -56,12 +56,14 @@ struct Robot : Singleton<Robot> {
                 .dead_zone = 568,// Значение получено экспериментально
             },
             .left_motor = {
+                .impl = Motor::DriverImpl::IArduino,
                 .direction = Motor::Direction::CCW,
                 .pin_a = static_cast<rs::u8>(GPIO_NUM_27),
                 .pin_b = static_cast<rs::u8>(GPIO_NUM_21),
                 .ledc_channel = 0,
             },
             .right_motor = {
+                .impl = Motor::DriverImpl::IArduino,
                 .direction = Motor::Direction::CW,
                 .pin_a = static_cast<rs::u8>(GPIO_NUM_19),
                 .pin_b = static_cast<rs::u8>(GPIO_NUM_18),
@@ -82,7 +84,9 @@ struct Robot : Singleton<Robot> {
             },
             .espnow_node = {
                 .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},
-            }}};
+            }
+        }
+    };
 
     // Аппаратные компоненты
 
@@ -112,7 +116,7 @@ struct Robot : Singleton<Robot> {
     ByteLangBridgeProtocol bridge{Serial};
 
     /// Инициализировать всю периферию
-    bool init() {
+    [[nodiscard]] bool init() {
         // Попытка загрузить настройки
         if (not storage.load()) {
             // Не удалось - сохраняем значения по умолчанию
@@ -201,36 +205,43 @@ private:
             "Motor L",
             left_motor,
             storage.settings.motor_pwm,
-            storage.settings.left_motor};
+            storage.settings.left_motor
+        };
 
         static zms::MotorTunePage right_motor_tune_page{
             "Motor R",
             right_motor,
             storage.settings.motor_pwm,
-            storage.settings.right_motor};
+            storage.settings.right_motor
+        };
 
         static zms::MotorPwmSettingsPage motor_pwm_settings_page{
-            storage.settings.motor_pwm};
+            storage.settings.motor_pwm
+        };
 
         // Энкодеры
 
         static zms::EncoderTunePage left_encoder_tune_page{
             "Encoder L",
             left_encoder,
-            storage.settings.left_encoder};
+            storage.settings.left_encoder
+        };
 
         static zms::EncoderTunePage right_encoder_tune_page{
             "Encoder R",
             right_encoder,
-            storage.settings.left_encoder};
+            storage.settings.left_encoder
+        };
 
         static zms::EncoderConversionSettingsPage encoder_conversion_settings_page{
-            storage.settings.encoder_conversion};
+            storage.settings.encoder_conversion
+        };
 
         //
 
         static zms::EspnowNodeSettingsPage espnow_node_settings_page{
-            storage.settings.espnow_node};
+            storage.settings.espnow_node
+        };
 
         page_manager.bind(zms::MainPage::instance());
 
