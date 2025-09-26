@@ -8,8 +8,8 @@ void setup() {
 
     Serial.begin(115200);
 
-    kf::Logger::instance().write_func = [](const char *buffer, size_t size) { 
-        // robot.bridge.send_log(buffer, size);        
+    kf::Logger::instance().write_func = [](const char *buffer, size_t size) {
+        robot.bridge.send_log(buffer, size);
     };
 
     kf_Logger_info("begin");
