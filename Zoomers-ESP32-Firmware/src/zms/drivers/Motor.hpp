@@ -102,7 +102,7 @@ public:
             driver_settings.ledc_channel);
 
         if (not driver_settings.isValid() or not pwm_settings.isValid()) {
-            Serial.println("invalid settings!");
+            kf_Logger_error("invalid settings!");
             return false;
         }
 
@@ -114,7 +114,7 @@ public:
 
         pinMode(driver_settings.pin_a, OUTPUT);
         pinMode(driver_settings.pin_b, OUTPUT);
-        Serial.println("pins configured as OUTPUT");
+        kf_Logger_debug("pins configured as OUTPUT");
 
         switch (driver_settings.impl) {
             case DriverImpl::IArduino: {
