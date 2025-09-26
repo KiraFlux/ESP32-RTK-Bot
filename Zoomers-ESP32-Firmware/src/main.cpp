@@ -3,10 +3,11 @@
 
 #include "zms/Robot.hpp"
 
-void setup() {
-    static auto &robot = zms::Robot::instance();
 
+void setup() {
     Serial.begin(115200);
+
+    static auto &robot = zms::Robot::instance();
 
     kf::Logger::instance().write_func = [](const char *buffer, size_t size) {
         robot.bridge.send_log(buffer, size);
@@ -14,7 +15,11 @@ void setup() {
 
     kf_Logger_info("begin");
 
-    robot.init();
+    if (not robot.init()) {
+        kf_Logger_fatal("Robot init failed!");
+        delay(5000);
+        ESP.restart();
+    }
 
     kf_Logger_debug("init ok");
 }

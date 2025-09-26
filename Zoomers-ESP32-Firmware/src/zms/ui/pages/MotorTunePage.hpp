@@ -62,7 +62,9 @@ struct MotorTunePage final : kf::tui::Page {
         re_init{
             "Re-Init",
             [&motor](kf::tui::Button &) {
-                motor.init();
+                if (not motor.init()) {
+                    kf_Logger_fatal("motor init failed!");
+                }
             }
         },
         pwm_input{

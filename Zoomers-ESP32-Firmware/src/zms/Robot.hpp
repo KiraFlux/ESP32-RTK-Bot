@@ -80,7 +80,7 @@ struct Robot : Singleton<Robot> {
             .right_encoder = {
                 .phase_a = static_cast<rs::u8>(GPIO_NUM_25),
                 .phase_b = static_cast<rs::u8>(GPIO_NUM_26),
-                .edge = Encoder::PinsSettings::Edge::Rising,
+                .edge = Encoder::PinsSettings::Edge::Falling,
             },
             .espnow_node = {
                 .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},

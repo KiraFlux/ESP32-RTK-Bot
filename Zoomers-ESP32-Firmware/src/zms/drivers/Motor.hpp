@@ -95,28 +95,49 @@ public:
     explicit constexpr Motor(const DriverSettings &driver_settings, const PwmSettings &pwm_settings) :
         driver_settings{driver_settings}, pwm_settings(pwm_settings) {}
 
-    /// Инициализация пинов драйвера
     [[nodiscard]] bool init() {
-        kf_Logger_info("begin");
+        kf_Logger_info(
+            "init: pins A=%d, B=%d, channel=%d\n",
+            driver_settings.pin_a, driver_settings.pin_b,
+            driver_settings.ledc_channel);
 
-        if (not driver_settings.isValid() or not pwm_settings.isValid()) { return false; }
+        if (not driver_settings.isValid() or not pwm_settings.isValid()) {
+            Serial.println("invalid settings!");
+            return false;
+        }
+
         max_pwm = pwm_settings.maxPwm();
+        kf_Logger_debug(
+            "max_pwm=%d, freq=%d, resolution=%d\n",
+            max_pwm, pwm_settings.ledc_frequency_hz,
+            pwm_settings.ledc_resolution_bits);
 
         pinMode(driver_settings.pin_a, OUTPUT);
         pinMode(driver_settings.pin_b, OUTPUT);
+        Serial.println("pins configured as OUTPUT");
 
         switch (driver_settings.impl) {
             case DriverImpl::IArduino: {
+                kf_Logger_debug("IArduino mode");
                 const auto current_frequency = ledcSetup(
                     driver_settings.ledc_channel,
                     pwm_settings.ledc_frequency_hz,
                     pwm_settings.ledc_resolution_bits);
-                if (current_frequency == 0) { return false; }
+
+                kf_Logger_debug("LEDC setup - freq=%u", current_frequency);
+
+                if (current_frequency == 0) {
+                    kf_Logger_error("LEDC setup failed!");
+                    return false;
+                }
+
                 ledcAttachPin(driver_settings.pin_b, driver_settings.ledc_channel);
+                kf_Logger_debug("LEDC attached to pin");
             }
                 break;
 
             case DriverImpl::L293nModule: {
+                kf_Logger_debug("L293n mode");
                 analogWriteFrequency(pwm_settings.ledc_frequency_hz);
                 analogWriteResolution(pwm_settings.ledc_resolution_bits);
             }
@@ -124,8 +145,8 @@ public:
         }
 
         stop();
+        kf_Logger_debug("ok");
 
-        kf_Logger_debug("end");
         return true;
     }
 
