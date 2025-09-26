@@ -10,7 +10,7 @@ struct ByteLangBridgeProtocol {
     using Sender = bytelang::bridge::Sender<rs::u8>;
     using Error = bytelang::bridge::Error;
     using Result = rs::Result<void, Error>;
-    using Receiver = bytelang::bridge::Receiver<rs::u8, 1>;
+    using Receiver = bytelang::bridge::Receiver<rs::u8, 2>;
 
     Sender sender;
     Receiver receiver;

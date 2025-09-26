@@ -17,6 +17,7 @@ void setup() {
 
     if (not robot.init()) {
         kf_Logger_fatal("Robot init failed!");
+        robot.storage.erase();
         delay(5000);
         ESP.restart();
     }

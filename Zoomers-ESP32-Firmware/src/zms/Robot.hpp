@@ -49,43 +49,7 @@ struct Robot : Singleton<Robot> {
     /// Хранилище настроек
     kf::Storage<Settings> storage{
         .key = "RobotSet",
-        .settings = {
-            .motor_pwm = {
-                .ledc_resolution_bits = 10,
-                .ledc_frequency_hz = 20000,
-                .dead_zone = 568,// Значение получено экспериментально
-            },
-            .left_motor = {
-                .impl = Motor::DriverImpl::IArduino,
-                .direction = Motor::Direction::CCW,
-                .pin_a = static_cast<rs::u8>(GPIO_NUM_27),
-                .pin_b = static_cast<rs::u8>(GPIO_NUM_21),
-                .ledc_channel = 0,
-            },
-            .right_motor = {
-                .impl = Motor::DriverImpl::IArduino,
-                .direction = Motor::Direction::CW,
-                .pin_a = static_cast<rs::u8>(GPIO_NUM_19),
-                .pin_b = static_cast<rs::u8>(GPIO_NUM_18),
-                .ledc_channel = 1,
-            },
-            .encoder_conversion = {
-                .ticks_in_one_mm = 1.0f,
-            },
-            .left_encoder = {
-                .phase_a = static_cast<rs::u8>(GPIO_NUM_32),
-                .phase_b = static_cast<rs::u8>(GPIO_NUM_33),
-                .edge = Encoder::PinsSettings::Edge::Rising,
-            },
-            .right_encoder = {
-                .phase_a = static_cast<rs::u8>(GPIO_NUM_25),
-                .phase_b = static_cast<rs::u8>(GPIO_NUM_26),
-                .edge = Encoder::PinsSettings::Edge::Falling,
-            },
-            .espnow_node = {
-                .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},
-            }
-        }
+        .settings = defaultSettings()
     };
 
     // Аппаратные компоненты
@@ -153,6 +117,50 @@ struct Robot : Singleton<Robot> {
     }
 
 private:
+
+    static const Settings &defaultSettings() {
+        static constexpr Settings default_settings{
+            .motor_pwm = {
+                .ledc_frequency_hz = 20000,
+                .dead_zone = 568,// Значение получено экспериментально
+                .ledc_resolution_bits = 10,
+            },
+            .left_motor = {
+                .impl = Motor::DriverImpl::IArduino,
+                .direction = Motor::Direction::CCW,
+                .pin_a = static_cast<rs::u8>(GPIO_NUM_27),
+                .pin_b = static_cast<rs::u8>(GPIO_NUM_21),
+                .ledc_channel = 0,
+            },
+            .right_motor = {
+                .impl = Motor::DriverImpl::IArduino,
+                .direction = Motor::Direction::CW,
+                .pin_a = static_cast<rs::u8>(GPIO_NUM_19),
+                .pin_b = static_cast<rs::u8>(GPIO_NUM_18),
+                .ledc_channel = 1,
+            },
+            .encoder_conversion = {
+                .ticks_in_one_mm = 1.0f,
+            },
+            .left_encoder = {
+                .phase_a = static_cast<rs::u8>(GPIO_NUM_32),
+                .phase_b = static_cast<rs::u8>(GPIO_NUM_33),
+                .edge = Encoder::PinsSettings::Edge::Rising,
+            },
+            .right_encoder = {
+                .phase_a = static_cast<rs::u8>(GPIO_NUM_25),
+                .phase_b = static_cast<rs::u8>(GPIO_NUM_26),
+                .edge = Encoder::PinsSettings::Edge::Falling,
+            },
+            .espnow_node = {
+                .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},
+            }
+        };
+        return default_settings;
+    }
+
+    // poll
+
     void pollRemoteControl() {
         if (espnow_remote_controller.isPacketTimeoutExpired()) {
             if (not espnow_remote_controller.disconnected) {
@@ -190,13 +198,23 @@ private:
         {
             /// Сохранить настройки
             static kf::tui::Button save{"Save", [this](kf::tui::Button &) { storage.save(); }};
+
             /// Загрузить настройки
             static kf::tui::Button load{"Load", [this](kf::tui::Button &) { storage.load(); }};
+
+            /// Восстановить значения по умолчанию
+            static kf::tui::Button restore_defaults{
+                "Restore", [this](kf::tui::Button &) {
+                    storage.settings = defaultSettings();
+                    storage.save();
+                }
+            };
 
             auto &p = MainPage::instance();
 
             p.add(save);
             p.add(load);
+            p.add(restore_defaults);
         }
 
         // Моторы

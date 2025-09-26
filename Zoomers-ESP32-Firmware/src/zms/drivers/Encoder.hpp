@@ -4,6 +4,7 @@
 
 #include "zms/aliases.hpp"
 
+
 /// Обработчик прерывания на основной фазе
 static void IRAM_ATTR encoderInterruptHandler(void *);
 

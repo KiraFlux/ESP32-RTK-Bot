@@ -62,12 +62,12 @@ struct Motor {
     struct PwmSettings {
         using FrequencyScalar = rs::u16;
 
-        /// Разрешение (8 .. 12)
-        rs::u8 ledc_resolution_bits;
         /// Частота ШИМ Гц
         FrequencyScalar ledc_frequency_hz;
         /// Мёртвая зона ШИМ
         SignedPwm dead_zone;
+        /// Разрешение (8 .. 12)
+        rs::u8 ledc_resolution_bits;
 
         [[nodiscard]] bool isValid() const {
             if (dead_zone < 0 or ledc_resolution_bits < 8 or ledc_resolution_bits > 12) {
