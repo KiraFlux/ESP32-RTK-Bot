@@ -21,6 +21,9 @@ struct ByteLangBridgeProtocol {
     /// send_log(...) -> u16[u8]
     bytelang::bridge::Instruction <Sender::Code, rs::str, rs::size> send_log;
 
+    /// task_completed() -> u32
+    bytelang::bridge::Instruction <Sender::Code, rs::u32> task_completed;
+
     explicit ByteLangBridgeProtocol(Stream &arduino_stream) :
         sender{bytelang::core::OutputStream{arduino_stream}},
         receiver{
@@ -50,6 +53,16 @@ struct ByteLangBridgeProtocol {
 
                     return {};
                 })
+        },
+        task_completed{
+            sender.createInstruction<rs::u32>([](bytelang::core::OutputStream &stream, rs::u32 result) -> Result {
+
+                if (not stream.write(result)) { return Error::InstructionArgumentWriteFail; }
+
+                kf_Logger_debug("task completed with result=%d", result);
+
+                return {};
+            })
         } {}
 
 private:
@@ -59,6 +72,23 @@ private:
             /// get_millis()
             [this](bytelang::core::InputStream &stream) -> Result {
                 return send_millis();
+            },
+
+            /// 0x01
+            /// execute_task(u8 code, f32 arg)
+            [this](bytelang::core::InputStream &stream) -> Result {
+                const auto code_opt = stream.readByte();
+                if (code_opt.none()) { return Error::InstructionArgumentReadFail; }
+
+                const rs::u8 task_code = code_opt.value;
+
+                const rs::f32 arg = stream.read<rs::f32>().value;
+
+                kf_Logger_info("Executing task=%d, arg=%f", task_code, arg);
+
+                delay(1000);
+
+                return task_completed(0x12345678);
             },
 
             //
