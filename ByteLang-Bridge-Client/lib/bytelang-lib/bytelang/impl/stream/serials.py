@@ -4,11 +4,12 @@ from typing import Sequence
 import serial.tools.list_ports
 from serial import Serial as SerialPort
 
-from bytelang.abc.stream import Stream
+from bytelang.abc.stream import InputStream
+from bytelang.abc.stream import OutputStream
 
 
 @dataclass
-class SerialStream(Stream):
+class SerialStream(InputStream, OutputStream):
     """Потом ввода-вывода по последовательному порту"""
 
     def __init__(self, port: str, baud: int) -> None:

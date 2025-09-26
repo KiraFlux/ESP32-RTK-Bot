@@ -3,10 +3,11 @@ from __future__ import annotations
 from threading import Condition
 from threading import Lock
 
-from bytelang.abc.stream import Stream
+from bytelang.abc.stream import InputStream
+from bytelang.abc.stream import OutputStream
 
 
-class VirtualStream(Stream):
+class VirtualStream(InputStream, OutputStream):
     """Простой поток-заглушка с блокирующим чтением"""
 
     def __init__(self,

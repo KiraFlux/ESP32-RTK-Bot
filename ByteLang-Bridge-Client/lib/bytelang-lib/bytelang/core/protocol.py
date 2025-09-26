@@ -4,7 +4,8 @@ from typing import Iterable
 
 from bytelang.abc.serializer import Serializable
 from bytelang.abc.serializer import Serializer
-from bytelang.abc.stream import Stream
+from bytelang.abc.stream import InputStream
+from bytelang.abc.stream import OutputStream
 from bytelang.core.instruction import Instruction
 from bytelang.impl.serializer.primitive import PrimitiveSerializer
 
@@ -17,13 +18,17 @@ class Protocol:
 
     def __init__(
             self,
-            stream: Stream,
+            input_stream: InputStream,
+            output_stream: OutputStream,
             local_code: PrimitiveSerializer[int],
             remote_code: PrimitiveSerializer[int]
     ) -> None:
-        self._stream: Final = stream
+        self._input_stream: Final = input_stream
+        self._output_stream: Final = output_stream
+
         self._local_instruction_code: Final = local_code
         self._remote_instruction_code: Final = remote_code
+
         self._receive_handlers: Final = dict[bytes, tuple[Instruction, OnReceiveFunction]]()
         self._send_handlers: Final = dict[bytes, Instruction]()
 
@@ -50,20 +55,20 @@ class Protocol:
         self._send_handlers[code] = instruction
 
         def _wrapper(value: T):
-            return instruction.send(self._stream, value)
+            return instruction.send(self._output_stream, value)
 
         return _wrapper
 
-    def pull(self) -> None:
+    def poll(self) -> None:
         """Обработать входящее сообщение"""
         code_size = self._remote_instruction_code.getSize()
-        code = self._stream.read(code_size)
+        code = self._input_stream.read(code_size)
 
         if code not in self._receive_handlers:
             print(f"Unknown instruction code: {code.hex()}")
             return
 
         instruction, handler = self._receive_handlers[code]
-        args_result = instruction.receive(self._stream)
+        args_result = instruction.receive(self._input_stream)
 
         return handler(args_result)

@@ -16,7 +16,3 @@ class OutputStream(ABC):
     @abstractmethod
     def write(self, data: bytes) -> None:
         """Записать данные в поток вывода"""
-
-
-class Stream(InputStream, OutputStream, ABC):
-    """Поток ввода-вывода"""

@@ -1,7 +1,8 @@
-from bytelang.abc.stream import Stream
+from bytelang.abc.stream import InputStream
+from bytelang.abc.stream import OutputStream
 
 
-class MockStream(Stream):
+class MockStream(InputStream, OutputStream):
 
     def write(self, data: bytes) -> None:
         return
