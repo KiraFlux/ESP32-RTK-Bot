@@ -4,7 +4,6 @@
 #include <kf/Logger.hpp>
 #include <rs/aliases.hpp>
 
-#include "zms/config.hpp"
 
 namespace zms {
 
@@ -22,8 +21,17 @@ struct Motor {
         CCW = 0x01
     };
 
+    /// Тип драйвера мотора
+    enum class DriverImpl : rs::u8 {
+        IArduino = 0x00,
+        L293nModule = 0x01,
+    };
+
     /// Настройки драйвера
     struct DriverSettings {
+
+        /// Выбранный драйвер
+        DriverImpl impl;
 
         /// Определение положительного направления вращения
         Direction direction;
@@ -54,12 +62,12 @@ struct Motor {
     struct PwmSettings {
         using FrequencyScalar = rs::u16;
 
-        /// Разрешение (8 .. 12)
-        rs::u8 ledc_resolution_bits;
         /// Частота ШИМ Гц
         FrequencyScalar ledc_frequency_hz;
         /// Мёртвая зона ШИМ
         SignedPwm dead_zone;
+        /// Разрешение (8 .. 12)
+        rs::u8 ledc_resolution_bits;
 
         [[nodiscard]] bool isValid() const {
             if (dead_zone < 0 or ledc_resolution_bits < 8 or ledc_resolution_bits > 12) {
@@ -87,37 +95,58 @@ public:
     explicit constexpr Motor(const DriverSettings &driver_settings, const PwmSettings &pwm_settings) :
         driver_settings{driver_settings}, pwm_settings(pwm_settings) {}
 
-    /// Инициализация пинов драйвера
-    bool init() {
-        kf_Logger_info("begin");
+    [[nodiscard]] bool init() {
+        kf_Logger_info(
+            "init: pins A=%d, B=%d, channel=%d\n",
+            driver_settings.pin_a, driver_settings.pin_b,
+            driver_settings.ledc_channel);
 
-        if (not driver_settings.isValid() or not pwm_settings.isValid()) { return false; }
+        if (not driver_settings.isValid() or not pwm_settings.isValid()) {
+            kf_Logger_error("invalid settings!");
+            return false;
+        }
+
         max_pwm = pwm_settings.maxPwm();
+        kf_Logger_debug(
+            "max_pwm=%d, freq=%d, resolution=%d\n",
+            max_pwm, pwm_settings.ledc_frequency_hz,
+            pwm_settings.ledc_resolution_bits);
 
         pinMode(driver_settings.pin_a, OUTPUT);
         pinMode(driver_settings.pin_b, OUTPUT);
+        kf_Logger_debug("pins configured as OUTPUT");
 
-        if constexpr (config::selected_motor_driver == config::MotorDriver::IArduino) {
+        switch (driver_settings.impl) {
+            case DriverImpl::IArduino: {
+                kf_Logger_debug("IArduino mode");
+                const auto current_frequency = ledcSetup(
+                    driver_settings.ledc_channel,
+                    pwm_settings.ledc_frequency_hz,
+                    pwm_settings.ledc_resolution_bits);
 
-            const auto current_frequency = ledcSetup(
-                driver_settings.ledc_channel,
-                pwm_settings.ledc_frequency_hz,
-                pwm_settings.ledc_resolution_bits);
-            if (current_frequency == 0) { return false; }
-            ledcAttachPin(driver_settings.pin_b, driver_settings.ledc_channel);
+                kf_Logger_debug("LEDC setup - freq=%u", current_frequency);
 
-        } else if constexpr (config::selected_motor_driver == config::MotorDriver::L293nModule) {
+                if (current_frequency == 0) {
+                    kf_Logger_error("LEDC setup failed!");
+                    return false;
+                }
 
-            analogWriteFrequency(pwm_settings.ledc_frequency_hz);
-            analogWriteResolution(pwm_settings.ledc_resolution_bits);
+                ledcAttachPin(driver_settings.pin_b, driver_settings.ledc_channel);
+                kf_Logger_debug("LEDC attached to pin");
+            }
+                break;
 
-        } else {
-
+            case DriverImpl::L293nModule: {
+                kf_Logger_debug("L293n mode");
+                analogWriteFrequency(pwm_settings.ledc_frequency_hz);
+                analogWriteResolution(pwm_settings.ledc_resolution_bits);
+            }
+                break;
         }
 
         stop();
+        kf_Logger_debug("ok");
 
-        kf_Logger_debug("end");
         return true;
     }
 
@@ -132,23 +161,25 @@ public:
     void write(SignedPwm pwm) const {
         pwm = constrain(pwm, -max_pwm, max_pwm);
 
-        if constexpr (config::selected_motor_driver == config::MotorDriver::IArduino) {
+        switch (driver_settings.impl) {
 
-            digitalWrite(driver_settings.pin_a, matchDirection(pwm));
-            ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
-
-        } else if constexpr (config::selected_motor_driver == config::MotorDriver::L293nModule) {
-
-            const bool positive_direction = matchDirection(pwm);
-            if (positive_direction) {
-                analogWrite(driver_settings.pin_a, std::abs(pwm));
-                analogWrite(driver_settings.pin_b, 0);
-            } else {
-                analogWrite(driver_settings.pin_a, 0);
-                analogWrite(driver_settings.pin_b, std::abs(pwm));
+            case DriverImpl::IArduino: {
+                digitalWrite(driver_settings.pin_a, matchDirection(pwm));
+                ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
             }
+                break;
 
-        } else {
+            case DriverImpl::L293nModule: {
+                const bool positive_direction = matchDirection(pwm);
+                if (positive_direction) {
+                    analogWrite(driver_settings.pin_a, std::abs(pwm));
+                    analogWrite(driver_settings.pin_b, 0);
+                } else {
+                    analogWrite(driver_settings.pin_a, 0);
+                    analogWrite(driver_settings.pin_b, std::abs(pwm));
+                }
+            }
+                break;
         }
     }
 

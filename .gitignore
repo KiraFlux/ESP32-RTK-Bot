@@ -1,4 +1,3 @@
 /.idea
 **/.pio
-
-**/*.bak
+/Models/**/*.bak

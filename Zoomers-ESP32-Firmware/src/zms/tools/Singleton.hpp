@@ -2,8 +2,9 @@
 
 namespace zms {
 
-/// Реализация шаблона проектирования "Одиночка"
+/// Полная реализация шаблона проектирования "Одиночка"
 template<typename T> struct Singleton {
+
     /// Получить ссылку на единственный экземпляр
     static T &instance() {
         static T instance{};

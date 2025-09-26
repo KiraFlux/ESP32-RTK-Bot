@@ -14,8 +14,12 @@ struct EncoderTunePage final : kf::tui::Page {
 
     TicksDisplay ticks_display;
     kf::tui::Labeled<kf::tui::CheckBox> enabled;
+    kf::tui::ComboBox<Encoder::PinsSettings::Edge, 2> edge;
 
-    explicit EncoderTunePage(const char *encoder_name, Encoder &encoder) :
+    explicit EncoderTunePage(
+        const char *encoder_name,
+        Encoder &encoder,
+        Encoder::PinsSettings &settings) :
         kf::tui::Page{encoder_name},
         ticks_display{
             "Pos",
@@ -29,10 +33,17 @@ struct EncoderTunePage final : kf::tui::Page {
                 } else {
                     encoder.disable();
                 }
-            }}} {
-        MainPage::instance().link(*this);
+            }}},
+        edge{
+            {{
+                {"Rising", Encoder::PinsSettings::Edge::Rising},
+                {"Falling", Encoder::PinsSettings::Edge::Falling},
+            }},
+            settings.edge} {
+        link(MainPage::instance());
         add(ticks_display);
         add(enabled);
+        add(edge);
     }
 };
 

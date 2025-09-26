@@ -1,13 +1,11 @@
 #pragma once
 
-#include "zms/tools/Singleton.hpp"
 #include "zms/tools/TimeoutManager.hpp"
 
 namespace zms {
 
 /// Работает с пакетами данных с пульта
-struct RemoteController : Singleton<RemoteController> {
-    friend struct Singleton<RemoteController>;
+struct EspnowRemoteController {
 
     /// Пакет данных управления
     struct ControlPacket {
@@ -18,9 +16,11 @@ struct RemoteController : Singleton<RemoteController> {
 
 private:
     ControlPacket control_packet{};
-    TimeoutManager packet_timeout_manager{1000};
+    TimeoutManager packet_timeout_manager{200};
 
 public:
+    bool disconnected{true};
+
     /// Рассчитать управление для двух моторов
     void calc(float &ret_left, float &ret_right) const {
         if (control_packet.toggle_mode) {

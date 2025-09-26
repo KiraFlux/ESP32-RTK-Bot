@@ -7,6 +7,7 @@
 #include "zms/ui/pages/MainPage.hpp"
 #include "zms/ui/widgets/EventObserver.hpp"
 
+
 namespace zms {
 
 /// Страница настройки моторов
@@ -38,19 +39,32 @@ struct MotorTunePage final : kf::tui::Page {
     FrequencyInput frequency_input;
     const Motor::PwmSettings::FrequencyScalar frequency_step{2500};
 
-    explicit MotorTunePage(const char *title, Motor &motor, kf::Storage<Robot::Settings> &storage) :
-        Page{title},
+    /// Направление движения
+    kf::tui::ComboBox<Motor::Direction, 2> direction;
+
+    kf::tui::ComboBox<Motor::DriverImpl, 2> driver_impl;
+
+    explicit MotorTunePage(
+        const char *motor_name,
+        Motor &motor,
+        Motor::PwmSettings &pwm_settings,
+        Motor::DriverSettings &driver_settings
+
+    ) :
+        Page{motor_name},
         pwm_step{static_cast<PwmDuty>(1u << (motor.pwm_settings.ledc_resolution_bits - 2))},
         set_current_pwm_as_dead_zone{
             "Set DeadZone",
-            [this, &storage](kf::tui::Button &) {
-                storage.settings.motor_pwm.dead_zone = current_pwm;
+            [this, &pwm_settings](kf::tui::Button &) {
+                pwm_settings.dead_zone = current_pwm;
             }
         },
         re_init{
             "Re-Init",
             [&motor](kf::tui::Button &) {
-                motor.init();
+                if (not motor.init()) {
+                    kf_Logger_fatal("motor init failed!");
+                }
             }
         },
         pwm_input{
@@ -96,19 +110,42 @@ struct MotorTunePage final : kf::tui::Page {
         frequency_input{
             "Hz",
             FrequencyInput::Content{
-                storage.settings.motor_pwm.ledc_frequency_hz,
+                pwm_settings.ledc_frequency_hz,
                 frequency_step,
                 FrequencyInput::Content::Mode::ArithmeticPositiveOnly
             }
+        },
+        direction{
+            {
+                {
+                    {"CW", Motor::Direction::CW},
+                    {"CCW", Motor::Direction::CCW},
+                }
+            },
+            driver_settings.direction
+        },
+        driver_impl{
+            {
+                {
+                    {"IArduino", Motor::DriverImpl::IArduino},
+                    {"L293N", Motor::DriverImpl::L293nModule},
+                }
+            },
+            driver_settings.impl
         } {
-        MainPage::instance().link(*this);
+        link(MainPage::instance());
+
         add(pwm_input);
         add(pwm_step_input);
         add(set_current_pwm_as_dead_zone);
+
         add(normalized_input);
         add(normalized_value_step_input);
-        add(frequency_input);
+        add(direction);
+
         add(re_init);
+        add(frequency_input);
+        add(driver_impl);
     }
 };
 
