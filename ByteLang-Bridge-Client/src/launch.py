@@ -25,7 +25,7 @@ def _launch():
     robot.start_poll_task()
     sleep(2)
 
-    # Начало алгоримта
+    # Начало алгоритма
 
     robot.send_millis_request(None)
     robot.go_dist(1000)

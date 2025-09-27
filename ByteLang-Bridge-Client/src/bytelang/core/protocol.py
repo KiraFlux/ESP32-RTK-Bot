@@ -32,22 +32,22 @@ class Protocol:
         self._receive_handlers: Final = dict[bytes, tuple[Instruction, OnReceiveFunction]]()
         self._send_handlers: Final = dict[bytes, Instruction]()
 
-    def getSenders(self) -> Iterable[Instruction]:
+    def get_senders(self) -> Iterable[Instruction]:
         """Получить все обработчики на отправку"""
         return self._send_handlers.values()
 
-    def getReceivers(self) -> Iterable[Instruction]:
+    def get_receivers(self) -> Iterable[Instruction]:
         """Получить все обработчики на приём"""
         return (i for i, j in self._receive_handlers.values())
 
-    def addReceiver[T: Serializable](self, /, result: Serializer[T], handler: OnReceiveFunction[T], name: str = None) -> None:
+    def add_receiver[T: Serializable](self, /, result: Serializer[T], handler: OnReceiveFunction[T], name: str = None) -> None:
         """Зарегистрировать обработчик входящих сообщений"""
         index = len(self._receive_handlers)
         code = self._local_instruction_code.pack(index)
         instruction = Instruction(code, result, name)
         self._receive_handlers[code] = (instruction, handler)
 
-    def addSender[T: Serializable](self, /, signature: Serializer[T], name: str = None) -> Callable[[T], None]:
+    def add_sender[T: Serializable](self, /, signature: Serializer[T], name: str = None) -> Callable[[T], None]:
         """Зарегистрировать исходящую инструкцию"""
         index = len(self._send_handlers)
         code = self._remote_instruction_code.pack(index)
