@@ -2,15 +2,16 @@
 #include <kf/Logger.hpp>
 
 #include "zms/Robot.hpp"
-
+#include "zms/remote/ByteLangBridgeProtocol.hpp"
 
 void setup() {
     Serial.begin(115200);
 
     static auto &robot = zms::Robot::instance();
+    static auto &bridge = zms::ByteLangBridgeProtocol::instance();
 
     kf::Logger::instance().write_func = [](const char *buffer, size_t size) {
-        robot.bridge.send_log(buffer, size);
+        bridge.send_log(buffer, size);
     };
 
     kf_Logger_info("begin");
@@ -26,8 +27,14 @@ void setup() {
 }
 
 void loop() {
+    delay(1);
+
     static auto &robot = zms::Robot::instance();
     robot.poll();
 
-    delay(1);
+    static auto &bridge = zms::ByteLangBridgeProtocol::instance();
+    const auto result = bridge.receiver.poll();
+    if (result.fail()) {
+        kf_Logger_error("BL bridge error: %d", static_cast<int>(result.error));
+    }
 }

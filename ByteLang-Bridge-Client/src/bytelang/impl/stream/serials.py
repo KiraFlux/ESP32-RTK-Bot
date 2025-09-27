@@ -57,10 +57,10 @@ class SerialStream(InputStream, OutputStream):
         self._serial_port = SerialPort(port=port or self.port, baudrate=self._baud, timeout=None)
         self._connected = True
 
-        self._serial.read(self._serial_port.in_waiting)
+        self._serial_port.read(self._serial_port.in_waiting)
 
     @staticmethod
-    def getPorts(exclude: Sequence[str] = ("COM1",)) -> Sequence[str]:
+    def search_ports(exclude: Sequence[str] = ("COM1",)) -> Sequence[str]:
         """Находит порты"""
 
         return tuple(

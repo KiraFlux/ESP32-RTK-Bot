@@ -2,18 +2,21 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Sequence
+from typing import TypeVar
 
 from bytelang.abc.serializer import Serializable
 from bytelang.abc.serializer import Serializer
 from bytelang.abc.stream import InputStream
 from bytelang.abc.stream import OutputStream
 
+_T = TypeVar("_T", bound=Serializable)
+
 
 @dataclass(frozen=True)
-class ArraySerializer[T: Serializable](Serializer[Sequence[T]]):
+class ArraySerializer(Serializer[Sequence[_T]]):
     """Сериализатор массивов фиксированной длины"""
 
-    item: Serializer[T]
+    item: Serializer[_T]
     """Сериализатор элемента массива"""
     length: int
     """Длинна массива"""
@@ -24,7 +27,7 @@ class ArraySerializer[T: Serializable](Serializer[Sequence[T]]):
     def __repr__(self) -> str:
         return f"[{self.length}]{self.item}"
 
-    def read(self, stream: InputStream) -> list[T]:
+    def read(self, stream: InputStream) -> list[_T]:
         items = list()
 
         for i in range(self.length):

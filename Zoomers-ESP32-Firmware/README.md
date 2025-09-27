@@ -19,5 +19,5 @@
 | Analog 1                         | 35   |
 | Servo 0                          | 21   |
 | Servo 1                          | 22   |
-| UART 2 RX                        | 16   |
-| UART 2 TX                        | 17   |
+<!-- | UART 2 RX                        | 16   | -->
+<!-- | UART 2 TX                        | 17   | -->

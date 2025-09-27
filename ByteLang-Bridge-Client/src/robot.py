@@ -86,7 +86,7 @@ class Robot(Protocol):
         while True:
             ports = tuple(
                 p
-                for p in SerialStream.getPorts()
+                for p in SerialStream.search_ports()
                 if "USB" in p
             )
 

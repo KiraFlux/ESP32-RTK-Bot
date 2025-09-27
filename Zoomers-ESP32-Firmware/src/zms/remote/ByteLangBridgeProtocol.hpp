@@ -3,10 +3,13 @@
 #include <Arduino.h>
 #include <bytelang/bridge.hpp>
 
+#include "zms/tools/Singleton.hpp"
 
 namespace zms {
 
-struct ByteLangBridgeProtocol {
+struct ByteLangBridgeProtocol : Singleton<ByteLangBridgeProtocol> {
+    friend struct Singleton<ByteLangBridgeProtocol>;
+
     using Sender = bytelang::bridge::Sender<rs::u8>;
     using Error = bytelang::bridge::Error;
     using Result = rs::Result<void, Error>;
@@ -24,10 +27,10 @@ struct ByteLangBridgeProtocol {
     /// task_completed() -> u32
     bytelang::bridge::Instruction <Sender::Code, rs::u32> task_completed;
 
-    explicit ByteLangBridgeProtocol(Stream &arduino_stream) :
-        sender{bytelang::core::OutputStream{arduino_stream}},
+    explicit ByteLangBridgeProtocol() :
+        sender{bytelang::core::OutputStream{Serial}},
         receiver{
-            .in = bytelang::core::InputStream{arduino_stream},
+            .in = bytelang::core::InputStream{Serial},
             .handlers = getInstructions(),
         },
         send_millis{

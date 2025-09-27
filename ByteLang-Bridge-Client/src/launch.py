@@ -4,7 +4,7 @@ from typing import Mapping
 from robot import Robot
 
 
-def walk_bath(robot: Robot) -> Mapping[int, int]:
+def _walk_bath(robot: Robot) -> Mapping[int, int]:
     ret = dict()
     bars_in_bath = 10
 
@@ -33,7 +33,7 @@ def _launch():
     robot.turn(0.5)
     robot.go_dist(1000)
 
-    bath_data = walk_bath(robot)
+    bath_data = _walk_bath(robot)
     data_csv[0].update(bath_data)
 
     # стоим над кнопкой

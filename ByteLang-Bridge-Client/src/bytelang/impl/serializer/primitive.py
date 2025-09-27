@@ -2,6 +2,7 @@ import struct
 from itertools import chain
 from typing import Final
 from typing import Iterable
+from typing import TypeVar
 
 from bytelang.abc.serializer import Serializer
 from bytelang.abc.stream import InputStream
@@ -23,68 +24,72 @@ class _Format:
     F64: Final[str] = "d"
 
     @classmethod
-    def getAllSigned(cls) -> Iterable[str]:
+    def get_all_signed(cls) -> Iterable[str]:
         """Все знаковые форматы"""
         return cls.I8, cls.I16, cls.I32, cls.I64
 
     @classmethod
-    def getAllUnsigned(cls) -> Iterable[str]:
+    def get_all_unsigned(cls) -> Iterable[str]:
         """Все форматы без знака"""
         return cls.U8, cls.U16, cls.U32, cls.U64
 
     @classmethod
-    def getAllExponential(cls) -> Iterable[str]:
+    def get_all_exponential(cls) -> Iterable[str]:
         """Все экспоненциальные форматы"""
         return cls.F32, cls.F64
 
     @classmethod
-    def getAll(cls) -> Iterable[str]:
+    def get_all(cls) -> Iterable[str]:
         """Все типы"""
-        return chain(cls.getAllExponential(), cls.getAllSigned(), cls.getAllUnsigned())
+        return chain(cls.get_all_exponential(), cls.get_all_signed(), cls.get_all_unsigned())
 
     @classmethod
-    def matchPrefix(cls, fmt: str) -> str:
+    def get_prefix(cls, fmt: str) -> str:
         """Подобрать префикс"""
         match fmt:
-            case _ if fmt in cls.getAllExponential():
+            case _ if fmt in cls.get_all_exponential():
                 return "f"
 
-            case _ if fmt in cls.getAllSigned():
+            case _ if fmt in cls.get_all_signed():
                 return "i"
 
-            case _ if fmt in cls.getAllUnsigned():
+            case _ if fmt in cls.get_all_unsigned():
                 return "u"
 
         raise ValueError(fmt)
 
 
-class PrimitiveSerializer[T](Serializer[T]):
+_T = TypeVar("_T", bound=Serializer)
+
+
+class PrimitiveSerializer(Serializer[_T]):
     """Сериализатор примитивных типов с фиксированным размером"""
 
     def __init__(self, _format: str):
         self._struct = struct.Struct(f"<{_format}")
 
     def __repr__(self) -> str:
-        return f"{_Format.matchPrefix(self._struct.format.strip("<>"))}{self.getSize() * 8}"
+        return f"{_Format.get_prefix(self._struct.format.strip("<>"))}{self.size * 8}"
 
-    def read(self, stream: InputStream) -> T:
-        data = stream.read(self.getSize())
+    def read(self, stream: InputStream) -> _T:
+        data = stream.read(self.size)
         return self.unpack(data)
 
-    def write(self, stream: OutputStream, value: T) -> None:
+    def write(self, stream: OutputStream, value: _T) -> None:
         data = self.pack(value)
         stream.write(data)
 
-    def unpack(self, data: bytes) -> T:
+    def unpack(self, data: bytes) -> _T:
         """Распаковать данные"""
         return self._struct.unpack(data)[0]
 
-    def pack(self, value: T) -> bytes:
+    def pack(self, value: _T) -> bytes:
         """Упаковать данные"""
         return self._struct.pack(value)
 
-    def getSize(self) -> int:
-        """Узнать размер примитива"""
+    @property
+    def size(self) -> int:
+        """Размер примитива в байтах"""
         return self._struct.size
 
 
