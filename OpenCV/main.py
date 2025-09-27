@@ -2,12 +2,26 @@ import time
 from typing import Optional, Tuple, List
 
 import cv2
+from Detector import detector
+
 from imutils.video import VideoStream
 import time
 import csv
 import datetime
 import os
 import re
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -54,19 +68,15 @@ def get_qr_code_data(_video_stream: VideoStream) -> Optional[str]:
 
 
 if __name__ == '__main__':
-    camera_index = 1
+    camera_index = 0
     video_stream = VideoStream(src=camera_index).start()
     time.sleep(2.0)
 
 
-    while True:
-        data = get_qr_code_data(video_stream)
-        print(data)
 
-        if cv2.waitKey(1) & 0xff == ord('q'):
-            break
+    data = get_qr_code_data(video_stream) #link
 
-    create_protocol(data, "electrolysis_protocol.csv")
+    create_protocol(..., "electrolysis_protocol.csv") #сюда данные с магнитометров
     video_stream.stop()
 
     cv2.destroyAllWindows()
