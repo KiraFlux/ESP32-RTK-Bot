@@ -35,6 +35,28 @@ class Robot(Protocol):
 
         self.poll_task = Thread(target=self._poll, daemon=True)
 
+    def go_dist(self, mm: float) -> None:
+        """
+        Прямолинейное перемещение
+        :param:
+        """
+        self._send_task_and_wait(0x00, mm)
+
+    def check_magnetometer(self) -> int:
+        """
+        Сделать проверку ряда магнитометром
+        :returns: кол-во найденных магнитов в ряду
+        """
+        self._send_task_and_wait(0x02, 0.0)
+        return self._task_result
+
+    def turn(self, turns: float) -> None:
+        """
+        Разворот на месте
+        :param: turns кол-во оборотов. Положительный угол - поворот по часовой
+        """
+        self._send_task_and_wait(0x01, turns)
+
     @staticmethod
     def log(message: str) -> None:
         """Записать лог"""
@@ -97,25 +119,3 @@ class Robot(Protocol):
             sleep(0.01)
 
         self.log(f"Задача : {task_code=} {arg=} выполнена {self._task_result=}")
-
-    def go_dist(self, mm: float) -> None:
-        """
-        Прямолинейное перемещение
-        :param:
-        """
-        self._send_task_and_wait(0x00, mm)
-
-    def turn(self, turns: float) -> None:
-        """
-        Развороот на месте
-        :param: turns кол-во оборотов. Положительный угол - поворот по часовой
-        """
-        self._send_task_and_wait(0x01, turns)
-
-    def check_magnetometer(self) -> int:
-        """
-        Сделать проверку ряда магнитометром
-        :returns: кол-во найденных магнитов в ряду
-        """
-        self._send_task_and_wait(0x02, 0.0)
-        return self._task_result
