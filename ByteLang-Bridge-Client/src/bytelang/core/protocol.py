@@ -71,4 +71,4 @@ class Protocol:
         instruction, handler = self._receive_handlers[code]
         args_result = instruction.receive(self._input_stream)
 
-        return handler(args_result)
+        handler(args_result)
