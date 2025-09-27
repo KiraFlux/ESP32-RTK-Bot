@@ -1,5 +1,5 @@
 import time
-from typing import Optional
+from typing import Optional, Tuple, List
 
 import cv2
 from imutils.video import VideoStream
@@ -11,23 +11,23 @@ import re
 
 
 
+def create_protocol(data: Tuple[List[int], ...], filename: str = "protocol.csv"):
+    """
+    Создает CSV-файл протокола с данными о замыканиях пар анод-катод.
 
+    Args:
+        data: Кортеж из 8 элементов, каждый элемент - список номеров пар с замыканием
+        filename: Имя выходного файла
+    """
+    headers = ["Номер ванны", "Номер пары анод-катод с замыканием"]
 
+    with open(filename, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(headers)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        for bath_number, pairs in enumerate(data):
+            for p in pairs:
+                writer.writerow([bath_number, str(p)])
 
 
 
@@ -58,6 +58,7 @@ if __name__ == '__main__':
     video_stream = VideoStream(src=camera_index).start()
     time.sleep(2.0)
 
+
     while True:
         data = get_qr_code_data(video_stream)
         print(data)
@@ -65,6 +66,7 @@ if __name__ == '__main__':
         if cv2.waitKey(1) & 0xff == ord('q'):
             break
 
+    create_protocol(data, "electrolysis_protocol.csv")
     video_stream.stop()
 
     cv2.destroyAllWindows()
