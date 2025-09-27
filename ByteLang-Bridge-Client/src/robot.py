@@ -19,19 +19,19 @@ class Robot(Protocol):
 
         super().__init__(self._serial, self._serial, u8, u8)
 
-        self.send_millis_request = self.addSender(VoidSerializer(), "send_millis_request")
-        self.execute_task = self.addSender(StructSerializer((u8, f32)), "execute_task")
-        self.set_speed = self.addSender(f32, "set_speed")
+        self.send_millis_request = self.add_sender(VoidSerializer(), "send_millis_request")
+        self.execute_task = self.add_sender(StructSerializer((u8, f32)), "execute_task")
+        self.set_speed = self.add_sender(f32, "set_speed")
 
-        self.addReceiver(u32, self._on_millis)
-        self.addReceiver(ByteVectorSerializer(u16), self._on_log)
-        self.addReceiver(u32, self._on_task_completed, "on_task_completed")
+        self.add_receiver(u32, self._on_millis)
+        self.add_receiver(ByteVectorSerializer(u16), self._on_log)
+        self.add_receiver(u32, self._on_task_completed, "on_task_completed")
 
         self._task_completed: bool = True
         self._task_result: int = 0
 
-        self.log("Senders: \n" + "\n".join(map(str, self.getSenders())))
-        self.log("Receivers: \n" + "\n".join(map(str, self.getReceivers())))
+        self.log("Senders: \n" + "\n".join(map(str, self.get_senders())))
+        self.log("Receivers: \n" + "\n".join(map(str, self.get_receivers())))
 
         self.poll_task = Thread(target=self._poll, daemon=True)
 
