@@ -40,14 +40,14 @@ class Robot(Protocol):
         Прямолинейное перемещение
         :param:
         """
-        self._send_task_and_wait(0x00, mm)
+        self._send_task_and_wait(0x01, mm)
 
     def check_magnetometer(self) -> int:
         """
         Сделать проверку ряда магнитометром
         :returns: кол-во найденных магнитов в ряду
         """
-        self._send_task_and_wait(0x02, 0.0)
+        self._send_task_and_wait(0x10, 0.0)
         return self._task_result
 
     def turn(self, turns: float) -> None:
@@ -55,7 +55,14 @@ class Robot(Protocol):
         Разворот на месте
         :param: turns кол-во оборотов. Положительный угол - поворот по часовой
         """
-        self._send_task_and_wait(0x01, turns)
+        self._send_task_and_wait(0x02, turns)
+
+    def align(self, turns: float) -> None:
+        """
+        Разворот на месте
+        :param: turns кол-во оборотов. Положительный угол - поворот по часовой
+        """
+        self._send_task_and_wait(0x03, turns)
 
     @staticmethod
     def log(message: str) -> None:
