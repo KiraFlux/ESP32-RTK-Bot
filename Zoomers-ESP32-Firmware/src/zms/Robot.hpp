@@ -176,21 +176,35 @@ struct Robot : Singleton<Robot> {
         resetEncoders();
 
         const auto end = std::abs(storage.settings.encoder_conversion.toTicks(distance));
-
         const rs::f32 speed = (distance > 0) ? task.speed : -task.speed;
 
         while (true) {
             const auto l = std::abs(left_encoder.getPositionTicks());
             const auto r = std::abs(right_encoder.getPositionTicks());
-
             const auto current = (l + r) / 2;
 
             if (current > end) { break; }
 
-            syncMove(speed);
+            syncMove(calcSpeed(rs::f32(current) / end, 0.2f, speed));
 
             delay(1);
         };
+
+        stopMotors();
+    }
+
+    void stopMotors(Milliseconds duration = 400) {
+        const auto end = millis() + duration;
+        const auto k = 0.02;
+        resetEncoders();
+
+        while (millis() < end) {
+            delay(1);
+
+            setMotors(
+                -left_encoder.getPositionTicks() * k,
+                -right_encoder.getPositionTicks() * k);
+        }
 
         setMotors(0, 0);
     }
@@ -242,6 +256,14 @@ private:
                 .remote_controller_mac = {0x78, 0x1c, 0x3c, 0xa4, 0x96, 0xdc},
             }};
         return default_settings;
+    }
+
+    static rs::f32 calcSpeed(rs::f32 k, rs::f32 min_speed, rs::f32 max_speed) {
+        min_speed = constrain(min_speed, 0, max_speed);
+        const auto norm_k = std::abs(constrain(k, -1, 1));
+        const auto ret = min_speed + norm_k * (max_speed - min_speed);
+
+        return (k > 0) ? ret : -ret;
     }
 
     void resetEncoders() {

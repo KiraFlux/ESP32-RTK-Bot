@@ -45,7 +45,7 @@ struct TaskPage : kf::tui::Page {
                 arg_step,
                 ArgInput::Content::Mode::Arithmetic}},
         arg_step_input{
-            "arg-step",
+            "step",
             ArgInput::Content{
                 arg_step,
                 arg_step_step,
