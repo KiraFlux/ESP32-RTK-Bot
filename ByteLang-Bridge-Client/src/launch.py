@@ -31,60 +31,93 @@ class MissionLauncher:
         print("Система готова")
 
     def check_bath(self, bath_number):
-        print(f"Проверка ванны {bath_number}")
-
-        sleep(0.5)
-
-        field_value = self.robot.check_magnetometer()
-        print(f"  Поле: {field_value}")
-
-        if field_value > 0:
-            self.detected_faults.append(bath_number)
-            print(f"  *** ЗАМЫКАНИЕ В ВАННЕ {bath_number} ***")
-            return True
-        else:
-            print(f"  Ванна {bath_number} в норме")
-            return False
+        # убираем - сканирование теперь в движении
+        pass
 
     def patrol_baths(self):
         print("=== ОБХОД ВАНН ===")
 
-        # к первой ванне
+        # прямо до ванн
         print("Движение к ваннам")
-        self.robot.go_dist(1000)
+        self.robot.go_dist(2400)
 
-        # поворот к ваннам
-        self.robot.turn(0.25)
+        # налево до конца первой ванны + сканирование
+        print("Ванна 1: движение налево + сканирование")
+        self.robot.turn(-0.25)  # поворот налево
 
-        # к центру первой ванны
-        self.robot.go_dist(400)
+        # едем и сканируем ванну 1
+        for i in range(4):  # 4 точки сканирования по ходу движения
+            self.robot.go_dist(100)  # двигаемся частями
+            field = self.robot.check_magnetometer()
+            print(f"  Точка {i + 1}: поле {field}")
+            if field > 0 and 1 not in self.detected_faults:
+                self.detected_faults.append(1)
+                print("  *** ЗАМЫКАНИЕ В ВАННЕ 1 ***")
 
-        # обход ванн 1-4
-        for bath_num in range(1, 5):
-            print(f"\n--- ВАННА {bath_num} ---")
+        # разворот для перехода ко второй ванне
+        print("Переход к ванне 2")
+        self.robot.turn(0.5)  # разворот 180
+        self.robot.go_dist(400)  # назад
+        self.robot.turn(-0.25)  # поворот к следующей ванне
+        self.robot.go_dist(800)  # к ванне 2
+        self.robot.turn(-0.25)  # поворот вдоль ванны
 
-            self.check_bath(bath_num)
+        # едем и сканируем ванну 2
+        print("Ванна 2: движение + сканирование")
+        for i in range(4):
+            self.robot.go_dist(100)
+            field = self.robot.check_magnetometer()
+            print(f"  Точка {i + 1}: поле {field}")
+            if field > 0 and 2 not in self.detected_faults:
+                self.detected_faults.append(2)
+                print("  *** ЗАМЫКАНИЕ В ВАННЕ 2 ***")
 
-            if bath_num < 4:
-                print(f"К ванне {bath_num + 1}")
-                self.robot.go_dist(800)
+        # переход к ванне 3
+        print("Переход к ванне 3")
+        self.robot.turn(0.5)  # разворот
+        self.robot.go_dist(400)  # назад
+        self.robot.turn(-0.25)  # к следующей
+        self.robot.go_dist(800)  # к ванне 3
+        self.robot.turn(-0.25)  # вдоль ванны
+
+        # едем и сканируем ванну 3
+        print("Ванна 3: движение + сканирование")
+        for i in range(4):
+            self.robot.go_dist(100)
+            field = self.robot.check_magnetometer()
+            print(f"  Точка {i + 1}: поле {field}")
+            if field > 0 and 3 not in self.detected_faults:
+                self.detected_faults.append(3)
+                print("  *** ЗАМЫКАНИЕ В ВАННЕ 3 ***")
+
+        # переход к ванне 4
+        print("Переход к ванне 4")
+        self.robot.turn(0.5)  # разворот
+        self.robot.go_dist(400)  # назад
+        self.robot.turn(-0.25)  # к следующей
+        self.robot.go_dist(800)  # к ванне 4
+        self.robot.turn(-0.25)  # вдоль ванны
+
+        # едем и сканируем ванну 4
+        print("Ванна 4: движение + сканирование")
+        for i in range(4):
+            self.robot.go_dist(100)
+            field = self.robot.check_magnetometer()
+            print(f"  Точка {i + 1}: поле {field}")
+            if field > 0 and 4 not in self.detected_faults:
+                self.detected_faults.append(4)
+                print("  *** ЗАМЫКАНИЕ В ВАННЕ 4 ***")
 
         print("Обход завершен")
 
     def return_to_start(self):
         print("=== ВОЗВРАТ ===")
 
-        # разворот
-        self.robot.turn(0.5)
-
-        # обратно вдоль ванн
-        self.robot.go_dist(2200)
-
-        # к стартовой области
-        self.robot.turn(0.25)
-
-        # к стартовой ячейке
-        self.robot.go_dist(1400)
+        # от последней ванны к старту
+        self.robot.turn(0.5)  # разворот
+        self.robot.go_dist(400)  # от ванны
+        self.robot.turn(0.25)  # к старту
+        self.robot.go_dist(2400)  # назад к старту
 
         print("Возврат завершен")
 
