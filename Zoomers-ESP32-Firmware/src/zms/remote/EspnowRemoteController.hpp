@@ -14,8 +14,9 @@ struct EspnowRemoteController {
         bool toggle_mode{false};
     };
 
+    ControlPacket packet{};
+
 private:
-    ControlPacket control_packet{};
     TimeoutManager packet_timeout_manager{200};
 
 public:
@@ -23,15 +24,6 @@ public:
 
     /// Рассчитать управление для двух моторов
     void calc(float &ret_left, float &ret_right) const {
-        if (control_packet.toggle_mode) {
-            // Tank mode
-            ret_left = control_packet.left_y;
-            ret_right = control_packet.right_y;
-        } else {
-            // System mode
-            ret_left = control_packet.left_y + control_packet.left_x;
-            ret_right = control_packet.left_y - control_packet.left_x;
-        }
     }
 
     /// Просрочен ли пакет
@@ -39,12 +31,12 @@ public:
 
     /// Сбросить значение пакета управления
     void resetControlPacket() {
-        control_packet = ControlPacket{};
+        packet = ControlPacket{};
     }
 
     /// Обновить пакет
-    void updateControlPacket(const ControlPacket &packet) {
-        control_packet = packet;
+    void updateControlPacket(const ControlPacket &p) {
+        packet = p;
         packet_timeout_manager.update();
     }
 };
