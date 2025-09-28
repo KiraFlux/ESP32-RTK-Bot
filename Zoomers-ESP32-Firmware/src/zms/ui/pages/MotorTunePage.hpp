@@ -3,10 +3,9 @@
 #include <kf/tui.hpp>
 #include <rs/aliases.hpp>
 
-#include "zms/Robot.hpp"
+#include "zms/drivers/Motor.hpp"
 #include "zms/ui/pages/MainPage.hpp"
 #include "zms/ui/widgets/EventObserver.hpp"
-
 
 namespace zms {
 
@@ -50,89 +49,69 @@ struct MotorTunePage final : kf::tui::Page {
         Motor::PwmSettings &pwm_settings,
         Motor::DriverSettings &driver_settings
 
-    ) :
+        ) :
         Page{motor_name},
         pwm_step{static_cast<PwmDuty>(1u << (motor.pwm_settings.ledc_resolution_bits - 2))},
         set_current_pwm_as_dead_zone{
             "Set DeadZone",
             [this, &pwm_settings](kf::tui::Button &) {
                 pwm_settings.dead_zone = current_pwm;
-            }
-        },
+            }},
         re_init{
             "Re-Init",
             [&motor](kf::tui::Button &) {
                 if (not motor.init()) {
                     kf_Logger_fatal("motor init failed!");
                 }
-            }
-        },
+            }},
         pwm_input{
             PwmInput::Observable{
                 "PWM",
                 PwmInput::Observable::Content{
                     current_pwm,
-                    pwm_step
-                }
-            },
+                    pwm_step}},
             [this, &motor](kf::tui::Event) {
                 motor.write(current_pwm);
-            }
-        },
+            }},
         pwm_step_input{
             "Step",
             PwmStepInput::Content{
                 pwm_step,
                 pwm_step_step,
-                PwmStepInput::Content::Mode::Geometric
-            }
-        },
+                PwmStepInput::Content::Mode::Geometric}},
         normalized_input{
             NormalizedInput::Observable{
                 "Norm",
                 NormalizedInput::Observable::Content{
                     current_normalized_value,
-                    normalized_value_step
-                }
-            },
+                    normalized_value_step}},
             [this, &motor](kf::tui::Event) {
                 motor.set(current_normalized_value);
-            }
-        },
+            }},
         normalized_value_step_input{
             "Step",
             NormalizedValueStepInput::Content{
                 normalized_value_step,
                 normalized_value_step_step,
-                NormalizedValueStepInput::Content::Mode::Geometric
-            }
-        },
+                NormalizedValueStepInput::Content::Mode::Geometric}},
         frequency_input{
             "Hz",
             FrequencyInput::Content{
                 pwm_settings.ledc_frequency_hz,
                 frequency_step,
-                FrequencyInput::Content::Mode::ArithmeticPositiveOnly
-            }
-        },
+                FrequencyInput::Content::Mode::ArithmeticPositiveOnly}},
         direction{
-            {
-                {
-                    {"CW", Motor::Direction::CW},
-                    {"CCW", Motor::Direction::CCW},
-                }
-            },
-            driver_settings.direction
-        },
+            {{
+                {"CW", Motor::Direction::CW},
+                {"CCW", Motor::Direction::CCW},
+            }},
+            driver_settings.direction},
         driver_impl{
-            {
-                {
-                    {"IArduino", Motor::DriverImpl::IArduino},
-                    {"L293N", Motor::DriverImpl::L293nModule},
-                }
-            },
-            driver_settings.impl
-        } {
+            {{
+                {"IArduino", Motor::DriverImpl::IArduino},
+                {"L293N", Motor::DriverImpl::L293nModule},
+            }},
+            driver_settings.impl} {
         link(MainPage::instance());
 
         add(pwm_input);

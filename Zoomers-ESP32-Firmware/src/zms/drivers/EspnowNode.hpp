@@ -1,12 +1,9 @@
 #pragma once
 
 #include <WiFi.h>
-
 #include <espnow/Mac.hpp>
 #include <espnow/Protocol.hpp>
-
 #include <kf/Logger.hpp>
-
 
 namespace zms {
 

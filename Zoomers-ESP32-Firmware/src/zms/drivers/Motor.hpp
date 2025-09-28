@@ -2,8 +2,8 @@
 
 #include <Arduino.h>
 #include <kf/Logger.hpp>
-#include <rs/aliases.hpp>
 
+#include "zms/aliases.hpp"
 
 namespace zms {
 
@@ -133,15 +133,13 @@ public:
 
                 ledcAttachPin(driver_settings.pin_b, driver_settings.ledc_channel);
                 kf_Logger_debug("LEDC attached to pin");
-            }
-                break;
+            } break;
 
             case DriverImpl::L293nModule: {
                 kf_Logger_debug("L293n mode");
                 analogWriteFrequency(pwm_settings.ledc_frequency_hz);
                 analogWriteResolution(pwm_settings.ledc_resolution_bits);
-            }
-                break;
+            } break;
         }
 
         stop();
@@ -166,8 +164,7 @@ public:
             case DriverImpl::IArduino: {
                 digitalWrite(driver_settings.pin_a, matchDirection(pwm));
                 ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
-            }
-                break;
+            } break;
 
             case DriverImpl::L293nModule: {
                 const bool positive_direction = matchDirection(pwm);
@@ -178,8 +175,7 @@ public:
                     analogWrite(driver_settings.pin_a, 0);
                     analogWrite(driver_settings.pin_b, std::abs(pwm));
                 }
-            }
-                break;
+            } break;
         }
     }
 

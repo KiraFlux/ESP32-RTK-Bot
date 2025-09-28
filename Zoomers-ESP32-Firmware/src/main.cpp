@@ -3,40 +3,73 @@
 
 #include "zms/Robot.hpp"
 
-#include "zms/remote/ByteLangBridgeProtocol.hpp"
 
-#include "zms/tools/Timer.hpp"
+// espnow
+
+static void onEspnowRemoteControllerPacket(const void *data, rs::u8 size) {
+
+    /// Действие в меню
+    enum Action : rs::u8 {
+        None = 0x00,
+        Reload = 0x10,
+        Click = 0x20,
+        Left = 0x30,
+        Right = 0x31,
+        Up = 0x40,
+        Down = 0x41
+    };
+
+    auto translate = [](Action code) {
+        using kf::tui::Event;
+
+        switch (code) {
+            case Action::Reload: return Event::Update;
+            case Action::Click: return Event::Click;
+            case Action::Left: return Event::ChangeIncrement;
+            case Action::Right: return Event::ChangeDecrement;
+            case Action::Up: return Event::ElementPrevious;
+            case Action::Down: return Event::ElementNext;
+            case Action::None:
+            default: return Event::None;
+        }
+    };
+
+    static auto &page_manager = kf::tui::PageManager::instance();
+
+    switch (size) {
+        case sizeof(zms::EspnowRemoteController::ControlPacket)://
+            espnow_remote_controller.updateControlPacket(*static_cast<const zms::EspnowRemoteController::ControlPacket *>(data));
+            return;
+
+        case sizeof(Action)://
+            page_manager.addEvent(translate(*static_cast<const Action *>(data)));
+            return;
+
+        default: kf_Logger_warn("Unknown packet: (%d bytes)", size);
+    }
+}
 
 void setup() {
     Serial.begin(115200);
 
-    static auto &robot = zms::Robot::instance();
-    static auto &bridge = zms::ByteLangBridgeProtocol::instance();
-
     kf::Logger::instance().write_func = [](const char *buffer, size_t size) {
+        static auto &bridge = zms::ByteLangBridgeProtocol::instance();
         bridge.send_log(buffer, size);
     };
 
     kf_Logger_info("begin");
 
-    const auto robot_ok = robot.init();
-    const auto bridge_ok = bridge.init();
-
-    if (not robot_ok or not bridge_ok) {
+    auto &periphery = zms::Periphery::instance();
+    if (not periphery.init()) {
         kf_Logger_fatal("Robot init failed!");
-        robot.storage.erase();
+        periphery.storage.erase();
         delay(5000);
         ESP.restart();
     }
 
+    periphery.espnow_node.on_receive = onEspnowRemoteControllerPacket;
+
     kf_Logger_debug("init ok");
 }
 
-void loop() {
-    delay(1);
-
-    static auto &robot = zms::Robot::instance();
-    robot.poll();
-
-    static zms::Timer log_timer{200};
-}
+void loop() {}

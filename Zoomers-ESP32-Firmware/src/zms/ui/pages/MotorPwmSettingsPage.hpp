@@ -3,6 +3,7 @@
 #include <kf/tui.hpp>
 
 #include "zms/drivers/Motor.hpp"
+#include "zms/ui/pages/MainPage.hpp"
 
 namespace zms {
 
