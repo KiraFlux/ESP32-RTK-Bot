@@ -147,6 +147,10 @@ struct Robot : Singleton<Robot> {
         return task.current_state != Task::State::Idle;
     }
 
+    void executeTask(Task::State state) {
+        task.current_state = state;
+    }
+
     [[noreturn]] static void taskHandler(void *instance) {
         auto &robot = *static_cast<Robot *>(instance);
 
@@ -162,6 +166,20 @@ struct Robot : Singleton<Robot> {
                     robot.goDist(robot.task.arg);
                     break;
 
+                case Task::State::Turn:
+                    kf_Logger_debug("Execute turn arg=%f", robot.task.arg);
+                    robot.turn(robot.task.arg);
+                    break;
+
+                case Task::State::Aligh:
+                    kf_Logger_debug("Execute aligh");
+                    robot.align(robot.task.arg);
+                    break;
+
+                case Task::State::Hardcode:
+                    robot.hardcode();
+                    break;
+
                 default:
                     kf_Logger_warn("Invalid State: %d", int(robot.task.current_state));
                     break;
@@ -169,8 +187,31 @@ struct Robot : Singleton<Robot> {
 
             kf_Logger_info("Execute OK: %d", int(robot.task.current_state));
             robot.task.current_state = Task::State::Idle;
-            
         }
+    }
+
+    void hardcode() {
+        task.speed = 0.3;
+        goDist(2000);
+
+        task.speed = 0.2;
+        goDist(-200);
+
+        turn(0.25);
+
+        task.speed = 3.2;
+        goDist(700);
+
+        delay(1000);
+
+        task.speed = 0.8;
+        goDist(-1000);
+
+        goDist(300);
+
+        turn(0.25);
+
+        goDist(1000);//
     }
 
     void goDist(Millimeters distance) {
@@ -187,6 +228,42 @@ struct Robot : Singleton<Robot> {
             if (current > end) { break; }
 
             syncMove(calcSpeed(rs::f32(current) / end, 0.2f, speed));
+
+            delay(1);
+        };
+
+        stopMotors();
+    }
+
+    void align(Milliseconds duration) {
+        const auto end = millis() + duration;
+
+        while (millis() < end) {
+            const auto l = left_disnance_sensor.read();
+            const auto r = right_disnance_sensor.read();
+
+            const auto e = (l - r);
+
+            const auto p = e * 0.01;
+
+            syncMove(p, -1);
+
+            delay(1);
+        }
+
+        stopMotors();
+    }
+
+    void turn(rs::f32 turns) {
+        resetEncoders();
+
+        const Millimeters distance = turns * 225.0 * M_PI;
+
+        const auto end = std::abs(storage.settings.encoder_conversion.toTicks(distance));
+        const rs::f32 speed = (distance > 0) ? task.speed : -task.speed;
+
+        while (std::abs(left_encoder.getPositionTicks()) < end) {
+            syncMove(speed, -1);
 
             delay(1);
         };
@@ -215,25 +292,25 @@ private:
         static constexpr Settings default_settings{
             .motor_pwm = {
                 .ledc_frequency_hz = 20000,
-                .dead_zone = 568,// Значение получено экспериментально
+                .dead_zone = 300,// Значение получено экспериментально
                 .ledc_resolution_bits = 10,
             },
             .left_motor = {
-                .impl = Motor::DriverImpl::IArduino,
-                .direction = Motor::Direction::CW,
+                .impl = Motor::DriverImpl::L293nModule,
+                .direction = Motor::Direction::CCW,
                 .pin_a = static_cast<rs::u8>(GPIO_NUM_27),
                 .pin_b = static_cast<rs::u8>(GPIO_NUM_21),
                 .ledc_channel = 0,
             },
             .right_motor = {
-                .impl = Motor::DriverImpl::IArduino,
-                .direction = Motor::Direction::CW,
+                .impl = Motor::DriverImpl::L293nModule,
+                .direction = Motor::Direction::CCW,
                 .pin_a = static_cast<rs::u8>(GPIO_NUM_19),
                 .pin_b = static_cast<rs::u8>(GPIO_NUM_18),
                 .ledc_channel = 1,
             },
             .encoder_conversion = {
-                .ticks_in_one_mm = 1.0f,
+                .ticks_in_one_mm = (5000.0f / 2100.0f),
             },
             .left_encoder = {
                 .phase_a = static_cast<rs::u8>(GPIO_NUM_32),

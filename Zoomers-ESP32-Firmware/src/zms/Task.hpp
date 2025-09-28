@@ -18,6 +18,12 @@ struct Task {
 
         /// Поворот на месте
         Turn = 0x02,
+
+        ///
+        Aligh = 0x03,
+    
+        ///
+        Hardcode = 0x04
     };
 
     /// arg

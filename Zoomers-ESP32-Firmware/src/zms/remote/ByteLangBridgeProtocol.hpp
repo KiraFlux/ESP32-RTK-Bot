@@ -102,16 +102,22 @@ private:
             /// execute_task(u8 code, f32 arg)
             [this](bytelang::core::InputStream &stream) -> Result {
                 auto &robot = Robot::instance();
-                
+
                 const auto code_opt = stream.readByte();
                 if (code_opt.none()) { return Error::InstructionArgumentReadFail; }
 
                 const rs::u8 task_code = code_opt.value;
                 const rs::f32 arg = stream.read<rs::f32>().value;
-
+                
                 kf_Logger_info("Executing task=%d, arg=%f", task_code, arg);
 
-                ///////// todo ДОДЕЛАТЬ
+                robot.task.arg = arg;
+                robot.executeTask(static_cast<Task::State>(task_code));
+
+                while (robot.isExecutingTask()) {
+                    delay(1);
+                }
+
                 return task_completed(robot.task.result);
             },
 

@@ -11,7 +11,7 @@ struct TaskPage : kf::tui::Page {
 
     Task::State selected{Task::State::GoDist};
 
-    kf::tui::ComboBox<Task::State, 2> task_selector;
+    kf::tui::ComboBox<Task::State, 4> task_selector;
     kf::tui::Button start;
 
     using ArgInput = kf::tui::Labeled<kf::tui::SpinBox<rs::f32>>;
@@ -35,6 +35,8 @@ struct TaskPage : kf::tui::Page {
             {{
                 {"GoDist", Task::State::GoDist},
                 {"Turn", Task::State::Turn},
+                {"Aligh", Task::State::Aligh},
+                {"Hardcode", Task::State::Hardcode},
             }},
             selected,
         },

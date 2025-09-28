@@ -38,12 +38,5 @@ void loop() {
     static auto &robot = zms::Robot::instance();
     robot.poll();
 
-    static zms::Timer log_timer{100};
-
-    // if (log_timer.ready()) {
-    //     kf_Logger_debug(
-    //         "L: %d\tR: %d",
-    //         robot.left_encoder.getPositionTicks(),
-    //         robot.right_encoder.getPositionTicks());
-    // }
+    static zms::Timer log_timer{200};
 }
