@@ -169,6 +169,7 @@ struct Robot : Singleton<Robot> {
 
             kf_Logger_info("Execute OK: %d", int(robot.task.current_state));
             robot.task.current_state = Task::State::Idle;
+            
         }
     }
 
@@ -299,25 +300,10 @@ private:
             }
         } else {
             espnow_remote_controller.disconnected = false;
-            const auto &speed_y = espnow_remote_controller.packet.left_y;
-            const auto &speed_x = espnow_remote_controller.packet.left_x;
 
             if (espnow_remote_controller.packet.toggle_mode) {
-                const auto ax = std::abs(speed_y);
-                const auto ay = std::abs(speed_x);
-
-                if (ax + ay > 0.1) {
-                    if (ax > ay) {
-                        syncMove(speed_y, 1);
-                    } else {
-                        syncMove(speed_x, -1);
-                    }
-                } else {
-                    left_motor.stop();
-                    right_motor.stop();
-                }
-
-            } else {
+                const auto &speed_y = espnow_remote_controller.packet.left_y;
+                const auto &speed_x = espnow_remote_controller.packet.left_x;
                 left_motor.set(speed_y + speed_x);
                 right_motor.set(speed_y - speed_x);
             }

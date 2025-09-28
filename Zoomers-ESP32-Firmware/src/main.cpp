@@ -19,7 +19,10 @@ void setup() {
 
     kf_Logger_info("begin");
 
-    if (not robot.init()) {
+    const auto robot_ok = robot.init();
+    const auto bridge_ok = bridge.init();
+
+    if (not robot_ok or not bridge_ok) {
         kf_Logger_fatal("Robot init failed!");
         robot.storage.erase();
         delay(5000);
@@ -34,12 +37,6 @@ void loop() {
 
     static auto &robot = zms::Robot::instance();
     robot.poll();
-
-    static auto &bridge = zms::ByteLangBridgeProtocol::instance();
-    const auto result = bridge.receiver.poll();
-    if (result.fail()) {
-        kf_Logger_error("BL bridge error: %d", static_cast<int>(result.error));
-    }
 
     static zms::Timer log_timer{100};
 
