@@ -69,7 +69,7 @@ class PrimitiveSerializer(Serializer[_T]):
         self._struct = struct.Struct(f"<{_format}")
 
     def __repr__(self) -> str:
-        return f"{_Format.get_prefix(self._struct.format.strip("<>"))}{self.size * 8}"
+        return f"{_Format.get_prefix(self._struct.format.strip('<>'))}{self.size * 8}"
 
     def read(self, stream: InputStream) -> _T:
         data = stream.read(self.size)
