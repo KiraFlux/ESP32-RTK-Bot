@@ -2,7 +2,7 @@
 
 #include <kf/tui.hpp>
 
-#include "zms/drivers/Periphery.hpp"
+#include "zms/Periphery.hpp"
 #include "zms/ui/pages/MainPage.hpp"
 
 namespace zms {
@@ -34,6 +34,6 @@ public:
         add(load);
         add(restore_defaults);
     }
-}
+};
 
 }// namespace zms

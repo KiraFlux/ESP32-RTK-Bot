@@ -6,13 +6,16 @@
 #include "zms/drivers/EspnowNode.hpp"
 #include "zms/drivers/Motor.hpp"
 #include "zms/drivers/Sharp.hpp"
+#include "zms/tools/Singleton.hpp"
 
 /// @brief MISIS-Zoomers
 namespace zms {
 
-/// @brief Аппаратное обеспечение робота
-/// @brief Предоставляет доступ к аппаратным модулям робота и их настройкам!
-struct Periphery final {
+/// @brief Аппаратное обеспечение робота.
+/// Предоставляет доступ к аппаратным модулям робота и их настройкам.
+/// Может быть только единственным
+struct Periphery final : Singleton<Periphery> {
+    friend struct Singleton<Periphery>;
 
     /// @brief Настройки аппаратного обеспечения
     struct Settings {
