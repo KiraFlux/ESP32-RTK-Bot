@@ -3,18 +3,30 @@
 #include <functional>
 #include <kf/Logger.hpp>
 
+#include "zms/aliases.hpp"
 #include "zms/tools/TimeoutManager.hpp"
 
 namespace zms {
 
-/// Работает с пакетами данных с пульта
+/// @brief Работает с пакетами данных с пульта
 struct DualJoystickRemoteController {
 
-    /// Пакет данных управления
+    /// @brief Пакет данных управления
     struct ControlPacket {
-        float left_x{0}, left_y{0};
-        float right_x{0}, right_y{0};
-        bool toggle_mode{false};
+        /// @brief Левый стик, ось X
+        float left_x{0};
+
+        /// @brief Левый стик, ось Y
+        float left_y{0};
+
+        /// @brief Правый стик, ось X
+        float right_x{0};
+
+        /// @brief Правый стик, ось Y
+        float right_y{0};
+
+        /// @brief Режим
+        bool mode{false};
     };
 
 private:
@@ -50,12 +62,12 @@ public:
         }
     }
 
-    /// Сбросить значение пакета управления
+    /// @brief Сбросить значение пакета управления
     void resetControlPacket() {
         packet = ControlPacket{};
     }
 
-    /// Обновить пакет
+    /// @brief Обновить пакет
     void updateControlPacket(const ControlPacket &p) {
         packet = p;
         packet_timeout_manager.update();

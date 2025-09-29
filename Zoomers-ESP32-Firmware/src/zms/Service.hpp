@@ -75,12 +75,13 @@ struct Service final : Singleton<Service> {
                 packet.left_y,
                 packet.right_x,
                 packet.right_y,
-                packet.toggle_mode);
+                packet.mode);
         };
 
         return true;
     }
 
+    /// @brief Прокрутка событий сервисов
     void poll() {
         text_ui.poll();
         bytelang_bridge.poll();
