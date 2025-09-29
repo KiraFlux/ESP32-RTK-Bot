@@ -1,5 +1,7 @@
-/.idea
+**/.idea
 **/.pio
-/Models/**/*.bak
 
+# Мусорные файлы
+
+**/*.bak
 **/*.pyc
