@@ -7,34 +7,35 @@
 
 namespace zms {
 
-/// Узел Espnow
+/// @brief Узел Espnow
 struct EspnowNode {
 
 public:
-    /// Настройки узла
+    /// @brief Настройки узла
     struct Settings {
-        /// MAC-Адрес пульта
+        /// @brief MAC-Адрес пульта
         espnow::Mac remote_controller_mac;
     };
 
 private:
-    /// Настройки узла
+    /// @brief Настройки узла
     const Settings &settings;
 
 public:
-    /// Обработчик входящего пакета от пульта
+    /// @brief Обработчик входящего пакета от пульта
     std::function<void(const void *, rs::u8)> on_receive{nullptr};
 
     explicit EspnowNode(const Settings &settings) :
         settings{settings} {}
 
-    /// Инициализировать протокол
+    /// @brief Инициализировать протокол
     /// @returns <code>true</code> - Успешная инициализация
     [[nodiscard]] bool init() const {
         kf_Logger_info("init");
 
         const bool wifi_ok = WiFiClass::mode(WIFI_MODE_STA);
         if (not wifi_ok) {
+            kf_Logger_error("WIFI fail");
             return false;
         }
 
@@ -63,12 +64,12 @@ public:
         return true;
     }
 
-    /// Отправить пакет данных на пульт
+    /// @brief Отправить пакет данных на пульт
     template<typename T> inline rs::Result<void, espnow::Protocol::SendError> send(const T &value) {
         return espnow::Protocol::send(settings.remote_controller_mac, value);
     }
 
-    /// Отправить буфер на пульт
+    /// @brief Отправить буфер на пульт
     inline rs::Result<void, espnow::Protocol::SendError> send(const void *data, rs::u8 size) {
         return espnow::Protocol::send(settings.remote_controller_mac, data, size);
     }

@@ -6,15 +6,15 @@
 
 namespace zms {
 
-/// Хронометр
+/// @brief Хронометр
 struct Chronometer final {
 
 private:
-    /// Время предыдущего измерения
+    /// @brief Время предыдущего измерения
     Microseconds last_us{micros()};
 
 public:
-    /// Рассчитать дельту между вызовами
+    /// @brief Рассчитать дельту между вызовами
     /// @returns dt Сек.
     Seconds calc() noexcept {
         const auto current_us = micros();

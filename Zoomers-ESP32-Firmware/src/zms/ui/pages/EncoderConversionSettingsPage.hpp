@@ -7,7 +7,7 @@
 
 namespace zms {
 
-/// Страница настроек энкодера
+/// @brief Страница настроек преобразований энкодера
 struct EncoderConversionSettingsPage final : kf::tui::Page {
 
     explicit EncoderConversionSettingsPage(Encoder::ConversionSettings &settings) :

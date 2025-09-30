@@ -7,7 +7,7 @@
 
 namespace zms {
 
-/// Страница настроек узла Espnow
+/// @brief Страница настроек узла Espnow
 struct EspnowNodeSettingsPage final : kf::tui::Page {
 
     HexDisplay display;

@@ -6,25 +6,26 @@
 
 namespace zms {
 
-/// Служба для отслеживания момента истечения допустимого таймаута
+/// @brief Служба для отслеживания момента истечения допустимого таймаута
 struct TimeoutManager final {
 
 private:
-    /// Таймаут
+    /// @brief Таймаут
     Milliseconds timeout;
-    /// Время следующего таймаута
+
+    /// @brief Время следующего таймаута
     Milliseconds next_timeout{0};
 
 public:
     explicit TimeoutManager(Milliseconds timeout_duration) :
         timeout{timeout_duration} {}
 
-    /// Обновление таймаута
+    /// @brief Обновление таймаута
     void update() {
         next_timeout = millis() + timeout;
     }
 
-    /// Проверка истечения таймаута
+    /// @brief Проверка истечения таймаута
     /// @returns <code>true</code> если таймаут просрочен
     [[nodiscard]] inline bool expired() const { return millis() >= next_timeout; }
 };

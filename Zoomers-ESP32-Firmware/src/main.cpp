@@ -30,4 +30,7 @@ void setup() {
     kf_Logger_debug("init ok");
 }
 
-void loop() {}
+void loop() {
+    static auto &service = zms::Service::instance();
+    service.poll();
+}

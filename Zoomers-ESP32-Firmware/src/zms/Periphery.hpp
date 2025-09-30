@@ -24,6 +24,7 @@ struct Periphery final : Singleton<Periphery> {
 
         /// @brief Настройки ШИМ драйвера моторов
         Motor::PwmSettings motor_pwm;
+        
         /// @brief Настройки драйверов моторов
         Motor::DriverSettings left_motor, right_motor;
 
@@ -31,6 +32,7 @@ struct Periphery final : Singleton<Periphery> {
 
         /// @brief Настройки преобразования энкодера
         Encoder::ConversionSettings encoder_conversion;
+
         /// @brief Настройки подключения энкодеров
         Encoder::PinsSettings left_encoder, right_encoder;
 
@@ -48,11 +50,15 @@ struct Periphery final : Singleton<Periphery> {
 
     // Аппаратные компоненты
 
+    // Моторы
+
     /// @brief Левый мотор
     Motor left_motor{storage.settings.left_motor, storage.settings.motor_pwm};
 
     /// @brief Правый мотор
     Motor right_motor{storage.settings.right_motor, storage.settings.motor_pwm};
+
+    // Энкодеры
 
     /// @brief Левый Энкодер
     Encoder left_encoder{storage.settings.left_encoder, storage.settings.encoder_conversion};
@@ -60,11 +66,15 @@ struct Periphery final : Singleton<Periphery> {
     /// @brief Правый Энкодер
     Encoder right_encoder{storage.settings.right_encoder, storage.settings.encoder_conversion};
 
+    // Датчики расстояния
+
     /// @brief Левый датчик расстояния
     Sharp left_disnance_sensor{storage.settings.left_disnance_sensor};
 
     /// @brief Правый датчик расстояния
     Sharp right_disnance_sensor{storage.settings.right_disnance_sensor};
+
+    // Сеть
 
     /// @brief Узел протокола Espnow
     EspnowNode espnow_node{storage.settings.espnow_node};

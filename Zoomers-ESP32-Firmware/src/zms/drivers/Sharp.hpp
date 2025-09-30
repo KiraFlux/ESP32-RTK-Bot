@@ -7,16 +7,19 @@
 
 namespace zms {
 
+/// @brief ИК Датчик расстояния Sharp
 struct Sharp {
 
-    /// Значение выхода АЦП
+    /// @brief Значение выхода АЦП
     using AnalogValue = rs::u16;
 
+    /// @brief Настройки Sharp
     struct Settings {
 
-        /// Аналоговый пин сенсора
+        /// @brief Аналоговый пин сенсора
         rs::u8 pin;
-        /// Разрешение analogRead
+
+        /// @brief Разрешение АЦП
         rs::u8 resolution;
 
         [[nodiscard]] bool isValid() const {
@@ -29,8 +32,11 @@ struct Sharp {
     };
 
     const Settings &settings;
+
+private:
     AnalogValue max_value{0};
 
+public:
     explicit Sharp(const Settings &settings) :
         settings{settings} {}
 
@@ -45,10 +51,12 @@ struct Sharp {
         return true;
     }
 
+    /// @brief Считать значения датчика в величине АЦП 
     inline AnalogValue readRaw() const {
         return analogRead(settings.pin);
     }
 
+    /// @brief Считать расстояние в миллиметрах
     Millimeters read() const {
         // 65535 / analogRead(a)
         long sum = 0;

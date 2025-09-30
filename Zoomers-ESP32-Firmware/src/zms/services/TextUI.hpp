@@ -25,23 +25,34 @@ private:
     /// @brief Страница управления хранилищем настроек
     StoragePage storage_page;
 
+    //
+
     /// @brief Страница настройки драйверов моторов
     MotorTunePage left_motor_tune_page, right_motor_tune_page;
+
     /// @brief Страница настройки ШИМ драйвера моторов
     MotorPwmSettingsPage motor_pwm_settings_page;
 
+    //
+
     /// @brief Страница настройки энкодеров
     EncoderTunePage left_encoder_tune_page, right_encoder_tune_page;
+
     /// @brief Страница настройки конвертации энкодеров
     EncoderConversionSettingsPage encoder_conversion_settings_page;
+
+    //
 
     /// @brief Страница настройки узла Espnow
     EspnowNodeSettingsPage espnow_node_settings_page;
 
 public:
+    /// @brief Публичный конструктор для сервиса
     explicit TextUI() :
         TextUI{Periphery::instance()} {}
 
+    /// @brief Добавить событие в очередь
+    /// @param event
     void addEvent(kf::tui::Event event) {
         auto &page_manager = kf::tui::PageManager::instance();
         page_manager.addEvent(event);
@@ -61,9 +72,9 @@ public:
             return;
         }
 
-        const auto result = send_handler(slice);
+        const auto send_ok = send_handler(slice);
 
-        if (not result) {
+        if (not send_ok) {
             kf_Logger_error("send failed");
             return;
         }
@@ -107,8 +118,7 @@ private:
         espnow_node_settings_page{
             p.storage.settings.espnow_node} {
 
-        auto &page_manager = kf::tui::PageManager::instance();
-        page_manager.bind(MainPage::instance());
+        kf::tui::PageManager::instance().bind(MainPage::instance());
     }
 };
 

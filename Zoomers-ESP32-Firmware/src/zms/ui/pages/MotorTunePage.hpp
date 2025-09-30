@@ -9,7 +9,7 @@
 
 namespace zms {
 
-/// Страница настройки моторов
+/// @brief Страница настройки моторов
 struct MotorTunePage final : kf::tui::Page {
     kf::tui::Button set_current_pwm_as_dead_zone;
     kf::tui::Button re_init;

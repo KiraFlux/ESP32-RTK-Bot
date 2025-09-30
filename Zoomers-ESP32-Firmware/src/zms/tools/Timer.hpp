@@ -6,10 +6,10 @@
 
 namespace zms {
 
-/// Таймер
+/// @brief Таймер
 struct Timer {
 
-    /// Период срабатывания таймера
+    /// @brief Период срабатывания таймера
     Microseconds period;
 
 private:
@@ -19,7 +19,7 @@ public:
     explicit Timer(Milliseconds period) :
         period{period} {}
 
-    /// Прошел ли период
+    /// @brief Прошел ли период
     bool ready() {
         const auto now = millis();
         const auto delta = now - last;

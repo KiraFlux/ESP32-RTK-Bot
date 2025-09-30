@@ -6,7 +6,7 @@
 
 namespace zms {
 
-/// Основная страница
+/// @brief Основная страница
 struct MainPage final : kf::tui::Page, Singleton<MainPage> {
     friend struct Singleton<MainPage>;
 

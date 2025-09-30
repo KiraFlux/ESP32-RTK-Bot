@@ -7,6 +7,7 @@
 
 namespace zms {
 
+/// @brief Страница управления хранилищем настроек
 struct StoragePage final : kf::tui::Page {
 
 private:

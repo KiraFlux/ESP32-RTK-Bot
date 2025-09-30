@@ -8,14 +8,18 @@
 
 namespace zms {
 
+/// @brief Страница индивидуальных настроек энкодера
 struct EncoderTunePage final : kf::tui::Page {
 
+private:
     using TicksDisplay = kf::tui::Labeled<kf::tui::Display<Encoder::Ticks>>;
-
     TicksDisplay ticks_display;
+
     kf::tui::Labeled<kf::tui::CheckBox> enabled;
+
     kf::tui::ComboBox<Encoder::PinsSettings::Edge, 2> edge;
 
+public:
     explicit EncoderTunePage(
         const char *encoder_name,
         Encoder &encoder,

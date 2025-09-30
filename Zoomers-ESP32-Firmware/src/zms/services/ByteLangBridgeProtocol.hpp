@@ -5,7 +5,7 @@
 
 namespace zms {
 
-/// Протокол ByteLang Моста
+/// @brief Протокол ByteLang Моста
 struct ByteLangBridgeProtocol final {
 
     /// @brief Ошибка исполнения инструкции моста
@@ -30,10 +30,10 @@ private:
 public:
     // Инструкции отправки
 
-    /// send_millis() -> u32
+    /// @brief send_millis() -> u32
     bytelang::bridge::Instruction<Sender::Code> send_millis;
 
-    /// send_log(...) -> u8[u8]
+    /// @brief (...) -> send_log() -> u8[u8]
     bytelang::bridge::Instruction<Sender::Code, const char *, size_t> send_log;
 
     //
@@ -83,9 +83,9 @@ private:
     /// @return Таблица инструкций на приём
     Receiver::InstructionTable getInstructions() {
         return {
-            /// 0x00
-            /// get_millis()
-            /// Вызывает процедуру отправки бортового времени в миллисекундах
+            // 0x00
+            // get_millis()
+            // Вызывает процедуру отправки бортового времени в миллисекундах
             [this](bytelang::core::InputStream &stream) -> BridgeResult {
                 return send_millis();
             },
