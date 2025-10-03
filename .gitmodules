@@ -4,3 +4,6 @@
 [submodule "Zoomers-ESP32-Firmware/lib/ByteLang-Bridge"]
 	path = Zoomers-ESP32-Firmware/lib/ByteLang-Bridge
 	url = https://github.com/KiraFlux/ByteLang-Bridge.git
+[submodule "Zoomers-ESP32-Firmware/lib/Fresh-EspNow"]
+	path = Zoomers-ESP32-Firmware/lib/Fresh-EspNow
+	url = https://github.com/KiraFlux/Fresh-EspNow
