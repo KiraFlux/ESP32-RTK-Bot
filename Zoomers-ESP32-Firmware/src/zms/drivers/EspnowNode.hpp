@@ -1,9 +1,8 @@
 #pragma once
 
 #include <WiFi.h>
-#include <espnow/Mac.hpp>
-#include <espnow/Protocol.hpp>
 #include <kf/Logger.hpp>
+#include <kf/espnow.hpp>
 
 namespace zms {
 
@@ -14,7 +13,7 @@ public:
     /// @brief Настройки узла
     struct Settings {
         /// @brief MAC-Адрес пульта
-        espnow::Mac remote_controller_mac;
+        kf::espnow::Mac remote_controller_mac;
     };
 
 private:
@@ -39,22 +38,22 @@ public:
             return false;
         }
 
-        const auto init_result = espnow::Protocol::init();
+        const auto init_result = kf::espnow::Protocol::init();
         if (init_result.fail()) {
             kf_Logger_error(rs::toString(init_result.error));
             return false;
         }
 
-        const auto peer_result = espnow::Peer::add(settings.remote_controller_mac);
+        const auto peer_result = kf::espnow::Peer::add(settings.remote_controller_mac);
         if (peer_result.fail()) {
             kf_Logger_error(rs::toString(peer_result.error));
             return false;
         }
 
-        auto receive_handler = [this](const espnow::Mac &mac, const void *data, rs::u8 len) {
+        auto receive_handler = [this](const kf::espnow::Mac &mac, const void *data, rs::u8 len) {
             if (this->on_receive and mac == this->settings.remote_controller_mac) { this->on_receive(data, len); }
         };
-        const auto handler_result = espnow::Protocol::instance().setReceiveHandler(receive_handler);
+        const auto handler_result = kf::espnow::Protocol::instance().setReceiveHandler(receive_handler);
         if (handler_result.fail()) {
             kf_Logger_error(rs::toString(handler_result.error));
             return false;
@@ -65,13 +64,13 @@ public:
     }
 
     /// @brief Отправить пакет данных на пульт
-    template<typename T> inline rs::Result<void, espnow::Protocol::SendError> send(const T &value) {
-        return espnow::Protocol::send(settings.remote_controller_mac, value);
+    template<typename T> inline rs::Result<void, kf::espnow::Error> send(const T &value) {
+        return kf::espnow::Protocol::send(settings.remote_controller_mac, value);
     }
 
     /// @brief Отправить буфер на пульт
-    inline rs::Result<void, espnow::Protocol::SendError> send(const void *data, rs::u8 size) {
-        return espnow::Protocol::send(settings.remote_controller_mac, data, size);
+    inline rs::Result<void, kf::espnow::Error> send(const void *data, rs::u8 size) {
+        return kf::espnow::Protocol::send(settings.remote_controller_mac, data, size);
     }
 };
 
