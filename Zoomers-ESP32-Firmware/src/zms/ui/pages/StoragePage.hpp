@@ -23,10 +23,10 @@ private:
 public:
     explicit StoragePage(Periphery &periphery) :
         Page{"Storage"},
-        save{"Save", [&periphery](kf::tui::Button &) { periphery.storage.save(); }},
-        load{"Load", [&periphery](kf::tui::Button &) { periphery.storage.load(); }},
+        save{"Save", [&periphery]() { periphery.storage.save(); }},
+        load{"Load", [&periphery]() { periphery.storage.load(); }},
         restore_defaults{
-            "Restore", [&periphery](kf::tui::Button &) {
+            "Restore", [&periphery]() {
                 periphery.storage.settings = periphery.defaultSettings();
                 periphery.storage.save();
             }} {

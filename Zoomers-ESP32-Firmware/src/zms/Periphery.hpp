@@ -116,14 +116,14 @@ struct Periphery final : Singleton<Periphery> {
                 .ledc_resolution_bits = 10,
             },
             .left_motor = {
-                .impl = Motor::DriverImpl::L293nModule,
+                .impl = Motor::DriverImpl::L298nModule,
                 .direction = Motor::Direction::CCW,
                 .pin_a = static_cast<rs::u8>(GPIO_NUM_27),
                 .pin_b = static_cast<rs::u8>(GPIO_NUM_21),
                 .ledc_channel = 0,
             },
             .right_motor = {
-                .impl = Motor::DriverImpl::L293nModule,
+                .impl = Motor::DriverImpl::L298nModule,
                 .direction = Motor::Direction::CCW,
                 .pin_a = static_cast<rs::u8>(GPIO_NUM_19),
                 .pin_b = static_cast<rs::u8>(GPIO_NUM_18),

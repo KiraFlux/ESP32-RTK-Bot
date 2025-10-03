@@ -14,10 +14,6 @@ public:
     explicit HexDisplay(kf::tui::TextStream::Slice v) :
         view{std::move(v)} {}
 
-    bool onEvent(kf::tui::Event event) override {
-        return false;
-    }
-
     void doRender(kf::tui::TextStream &stream) const override {
         for (rs::size i = 0; i < view.len; i += 1) {
             const rs::u8 b = *(view.data + i);

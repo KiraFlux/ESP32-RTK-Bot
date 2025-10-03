@@ -24,8 +24,11 @@ struct Motor {
 
     /// @brief Тип драйвера мотора
     enum class DriverImpl : rs::u8 {
+        /// @brief Реализация мотор-шилда IArduino
         IArduino = 0x00,
-        L293nModule = 0x01,
+        
+        /// @brief Реализация драйвера моторов на H-Мосте L298nModule 
+        L298nModule = 0x01,
     };
 
     /// @brief Настройки драйвера
@@ -147,7 +150,7 @@ public:
                 kf_Logger_debug("LEDC attached to pin");
             } break;
 
-            case DriverImpl::L293nModule: {
+            case DriverImpl::L298nModule: {
                 kf_Logger_debug("L293n mode");
 
                 analogWriteFrequency(pwm_settings.ledc_frequency_hz);
@@ -179,7 +182,7 @@ public:
                 ledcWrite(driver_settings.ledc_channel, std::abs(pwm));
             } break;
 
-            case DriverImpl::L293nModule: {
+            case DriverImpl::L298nModule: {
                 const bool positive_direction = matchDirection(pwm);
                 if (positive_direction) {
                     analogWrite(driver_settings.pin_a, std::abs(pwm));
